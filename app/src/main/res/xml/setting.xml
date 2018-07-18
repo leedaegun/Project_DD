@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="사용자 정보">
+
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="edit_text_preference_1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Edit" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="어플리케이션 설정">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:title="Switch preference" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_2"
+            android:title="Switch preference" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_3"
+            android:title="Switch preference" />
+    </PreferenceCategory>
+</PreferenceScreen>
