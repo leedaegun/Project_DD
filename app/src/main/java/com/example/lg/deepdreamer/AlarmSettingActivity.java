@@ -1,14 +1,13 @@
 package com.example.lg.deepdreamer;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,52 +18,66 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
+
+import static com.example.lg.deepdreamer.R.id.set;
 
 public class AlarmSettingActivity extends AppCompatActivity implements TimePicker.OnTimeChangedListener{
+
+
+    TextView tv;
     // 알람 메니저
     private AlarmManager mManager;
     // 설정 일시
-    private Calendar mCalendar;
+    private Calendar mCalendar,currentCalendar;
     //시작 설정 클래스
     private TimePicker mTime;
     private Button alarmDialog;
     private int tmp_year,tmp_month,tmp_date;
+    Date date  = new Date();
     /*
      * 통지 관련 맴버 변수
      */
-    private NotificationManager mNotification;
 
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //통지 매니저를 취득
-        mNotification = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        final DBHelper dbHelper = new DBHelper(getApplicationContext(),"DeepDreamerAlarm.db",null,1);
+
+        tv = (TextView)findViewById(R.id.tv);
+
 
         //알람 매니저를 취득
         mManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //현재 시각을 취득
         mCalendar = Calendar.getInstance();
+        currentCalendar = Calendar.getInstance();
 
-        tmp_year=mCalendar.get(Calendar.YEAR);
+        mCalendar.setTime(date);
+        tmp_date =mCalendar.get(Calendar.DATE);
         tmp_month=mCalendar.get(Calendar.MONTH);
-        tmp_date=mCalendar.get(Calendar.DATE);
-
-        //String initMsg = String.format("%d 년 %d 월 %d 일", mCalendar.get(Calendar.YEAR) , mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DATE));
+        tmp_year=mCalendar.get(Calendar.YEAR);
+        String initMsg = String.format("%d 년 %d 월 %d 일",tmp_year , tmp_month, tmp_date);
         //alarmDialog.setText(initMsg);
 
         Log.i("처음 시간 설정값",mCalendar.getTime().toString());
+        Log.i("intiMsg : ",initMsg);
         //셋 버튼, 리셋버튼의 리스너를 등록
         setContentView(R.layout.activity_alarm_setting);
-        Button b = (Button)findViewById(R.id.set);
+        Button b = (Button)findViewById(set);
         b.setOnClickListener (new View.OnClickListener() {
             public void onClick (View v) {
-                Toast.makeText(AlarmSettingActivity.this,"알람이 설정되었습니다.",Toast.LENGTH_LONG).show();
+
                 setAlarm();
-                Intent intent = new Intent(AlarmSettingActivity.this,RealMainActivity.class);
-                startActivity(intent);
-                finish();
+                dbHelper.insert(mCalendar.get(mCalendar.MONTH)+1,mCalendar.get(mCalendar.HOUR_OF_DAY),mCalendar.get(mCalendar.MINUTE));//addAlarm(int on, int day, int hour, int min, int vib, String ring)
+                //tv.setText(dbHelper.getResult());
+                Log.i("년 : ",Integer.toString(mCalendar.get(mCalendar.YEAR)));
+                Log.i("달 : ",Integer.toString(mCalendar.get(mCalendar.MONTH)));
+                Log.i("분 : ",Integer.toString(mCalendar.get(mCalendar.MINUTE)));
+                Log.i("result : ",dbHelper.getResult());
+                //dbHelper.check();
             }
         });
 
@@ -73,6 +86,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
             public void onClick(View v) {
                 Toast.makeText(AlarmSettingActivity.this,"알람이 해제되었습니다.",Toast.LENGTH_LONG).show();
                 resetAlarm();
+                dbHelper.allDelete();
             }
         });
         //DATE PICKER DIALOG
@@ -83,7 +97,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
             @Override
             public void onClick(View view) {
 
-                DatePickerDialog dialog = new DatePickerDialog(AlarmSettingActivity.this, new DatePickerDialog.OnDateSetListener() {
+                final DatePickerDialog dialog = new DatePickerDialog(AlarmSettingActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int date) {
                         tmp_year = year;
@@ -92,12 +106,20 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
                         String msg = String.format("%d 년 %d 월 %d 일", year, month+1, date);
                         alarmDialog.setText(msg);//설정한 날짜로 텍스트 변경
-                        mCalendar.set (year, month+1, date, mTime.getCurrentHour(), mTime.getCurrentMinute());//설정한 날짜 저장
+                        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+                            mCalendar.set (year, month, date, mTime.getHour(), mTime.getMinute());//설정한 날짜 저장
+
+                        }else{
+                            mCalendar.set (year, month, date, mTime.getCurrentHour(), mTime.getCurrentMinute());//설정한 날짜 저장
+                        }
+
                         Log.i("날짜가 바뀌었습니다", mCalendar.getTime().toString());
                         //Toast.makeText(AlarmSettingActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DATE));//오늘날짜로 기본 설정
 
+                currentCalendar.setTime(date);
+                dialog.getDatePicker().setMinDate(currentCalendar.getTime().getTime());
                 dialog.show();
 
             }
@@ -105,16 +127,24 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
         //타임피커 현재시각으로 초기화
         mTime = (TimePicker)findViewById(R.id.time_picker);
-        mTime.setCurrentHour(mCalendar.get(Calendar.HOUR_OF_DAY));
-        mTime.setCurrentMinute(mCalendar.get(Calendar.MINUTE));
+        //버전에따라 다름
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+
+            mTime.setHour(mCalendar.get(Calendar.HOUR_OF_DAY));
+            mTime.setMinute(mCalendar.get(Calendar.MINUTE));
+        }else{
+
+            mTime.setCurrentHour(mCalendar.get(Calendar.HOUR_OF_DAY));
+            mTime.setCurrentMinute(mCalendar.get(Calendar.MINUTE));
+        }
         mTime.setOnTimeChangedListener(this);
 
-        TextView tv = (TextView)findViewById(R.id.tv);
 
-        SharedPreferences setting;
-        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);//로그인정보담을 setting
 
-        tv.setText(setting.getString("success_ID",""));
+        //SharedPreferences setting;
+        //setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);//로그인정보담을 setting
+
+
 
 
 
@@ -124,13 +154,28 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     }
     //알람의 설정
     private void setAlarm() {
-        mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());
-        Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
+        //tmpCalendar = Calendar.getInstance();
+        //tmpCalendar.set(Calendar.YEAR,Calendar.MONTH,Calendar.DATE,Calendar.HOUR_OF_DAY,Calendar.MINUTE,Calendar.SECOND);
+        //Log.e("tmpCalender : ",Long.toString(System.currentTimeMillis()));
+        //Log.e("before : ",Long.toString(mCalendar.getTimeInMillis()));
+        if(false){
+            Toast.makeText(AlarmSettingActivity.this,"현재시간보다 전입니다. 알람시간을 다시 설정하세요.",Toast.LENGTH_LONG).show();
+        }
+        else{
+            mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());
+            Toast.makeText(AlarmSettingActivity.this,"알람이 설정되었습니다.",Toast.LENGTH_LONG).show();
+            Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
+            Intent intent = new Intent(AlarmSettingActivity.this,RealMainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
     //알람의 해제
     private void resetAlarm() {
         mManager.cancel(pendingIntent());
+
         Log.i("알람이 해제되었습니다", mCalendar.getTime().toString());
     }
     //알람의 설정 시각에 발생하는 인텐트 작성

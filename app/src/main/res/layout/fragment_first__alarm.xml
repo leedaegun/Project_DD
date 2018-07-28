@@ -13,31 +13,33 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="67dp"
         android:textColor="#000000"
         android:textSize="20dp"
         android:text="알람설정"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/bt_start" />
+        android:layout_alignStart="@+id/bt_start"
+        android:layout_marginTop="15dp" />
 
     <Button
         android:id="@+id/bt_start"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="99dp"
         android:textColor="#000000"
         android:textSize="20dp"
         android:onClick="onStart"
-        android:text="측정시작" />
+        android:text="측정시작"
+        android:layout_marginTop="41dp"
+        android:layout_below="@+id/bt_to_Alarm_Setting"
+        android:layout_centerHorizontal="true" />
     <TextView
         android:id="@+id/tv_roll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="roll" />
+        android:text="roll"
+        android:layout_below="@+id/bt_Gyro"
+        android:layout_alignParentStart="true" />
     <TextView
         android:id="@+id/tv_pitch"
         android:layout_width="wrap_content"
@@ -45,7 +47,7 @@
         android:textSize="20dp"
         android:text="pitch"
         android:layout_below="@+id/tv_roll"
-        android:layout_alignStart="@+id/tv_roll" />
+        android:layout_alignParentStart="true" />
     <Button
         android:id="@+id/bt_Gyro"
         style="@style/Widget.AppCompat.Button.Borderless"
@@ -55,7 +57,18 @@
         android:textSize="20dp"
         android:onClick="onStart"
         android:text="자이로측정시작"
-        android:layout_below="@+id/bt_to_Alarm_Setting"
-        android:layout_alignStart="@+id/bt_to_Alarm_Setting"
-        android:layout_marginTop="128dp" />
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/test"
+        android:layout_alignStart="@+id/bt_to_Alarm_Setting" />
+
+    <TextView
+        android:id="@+id/test"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="소리크기"
+        android:textSize="20dp"
+        android:textColor="#000000"
+        android:layout_marginTop="18dp"
+        android:layout_below="@+id/bt_start"
+        android:layout_toEndOf="@+id/tv_pitch" />
 </RelativeLayout>
