@@ -212,7 +212,7 @@ public class First_AlarmFragment extends Fragment {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//output file 에 audio track 이 포함되는과정
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);//이거 설정해제해보기 저장되나안되나
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);//
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new RecorderTask(mRecorder), 0, 500);
 
