@@ -76,6 +76,9 @@ public class First_AlarmFragment extends Fragment {
 
     private boolean running=false;
 
+    //서비스 변수
+    private AlarmService mAlamService;
+
     public First_AlarmFragment() {
         // Required empty public constructor
     }
@@ -84,7 +87,23 @@ public class First_AlarmFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }
+    }/*
+    private ServiceConnection mAlamService = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            // 서비스에 연결되었습니다.
+            mAlamService = ((AlarmService.Binder)binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // 서비스가 비정상적으로 종료되었습니다.
+            mAlamService = null;
+        }
+    };*/
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -191,8 +210,8 @@ public class First_AlarmFragment extends Fragment {
         }
 
         mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//output file 에 audio track 이 포함되는과정
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);//이거 설정해제해보기 저장되나안되나
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new RecorderTask(mRecorder), 0, 500);
@@ -221,11 +240,32 @@ public class First_AlarmFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();/*
+        if (mAlamService == null) {
+            onBindService();
+        }
+        startService(new Intent(getApplicationContext(), AlarmService.class));
+*/
+
+    }
+
     @Override
     public void onPause(){
         super.onPause();
         Log.e("LOG", "onPause()");
         mSensorManager.unregisterListener(mGyroLis);
+        /* if (mMusicPlayerService != null) {
+            if (!mMusicPlayerService.isPlaying()) {
+                // 음악이 정지 중일 경우는 서비스를 계속 실행할 필요가 없으므로 정지한다.
+                mMusicPlayerService.stopSelf();
+            }
+            unbindService(mMusicPlayerServiceConnection);
+            mMusicPlayerService = null;
+        }
+*/
     }
 
     @Override
@@ -237,7 +277,17 @@ public class First_AlarmFragment extends Fragment {
             mRecorder = null;
         }
         mSensorManager.unregisterListener(mGyroLis);
+
     }
+    /*
+    private void onBindService() {
+        Intent intent = new Intent(this, AlarmService.class);
+        bindService(intent, mAlamServiceConnection, Context.BIND_AUTO_CREATE);
+    }*/
+
+
+
+
     private class RecorderTask extends TimerTask {
 
         private MediaRecorder mRecorder;
