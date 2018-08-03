@@ -3,6 +3,7 @@ package com.example.lg.deepdreamer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,8 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +36,6 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -78,6 +79,12 @@ public class First_AlarmFragment extends Fragment {
 
     //서비스 변수
     private AlarmService mAlamService;
+    //녹음 테스트 변수
+    private Button btnStart;
+    private Button btnStop;
+    private AutoVoiceReconizer autoVoiceRecorder;
+
+    private TextView statusTextView;
 
     public First_AlarmFragment() {
         // Required empty public constructor
@@ -193,6 +200,25 @@ public class First_AlarmFragment extends Fragment {
                 }
             }
         });
+        autoVoiceRecorder = new AutoVoiceReconizer( handler );
+        statusTextView = layout.findViewById( R.id.text_view_status );
+        btnStart = layout.findViewById( R.id.btn_start );
+        btnStop = layout.findViewById( R.id.btn_stop );
+        statusTextView.setText("준비..");
+
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoVoiceRecorder.startLevelCheck();
+            }
+        });
+
+        btnStop.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                autoVoiceRecorder.stopLevelCheck();
+            }
+        });
 
 
        
@@ -201,6 +227,31 @@ public class First_AlarmFragment extends Fragment {
 
         return layout;
     }
+    Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            switch( msg.what ){
+                case AutoVoiceReconizer.VOICE_READY:
+                    statusTextView.setText("준비...");
+                    break;
+                case AutoVoiceReconizer.VOICE_RECONIZING:
+                    statusTextView.setTextColor( Color.YELLOW );
+                    statusTextView.setText("목소리 인식중...");
+                    break;
+                case AutoVoiceReconizer.VOICE_RECONIZED :
+                    statusTextView.setTextColor( Color.GREEN );
+                    statusTextView.setText("목소리 감지... 녹음중...");
+                    break;
+                case AutoVoiceReconizer.VOICE_RECORDING_FINSHED:
+                    statusTextView.setTextColor( Color.YELLOW );
+                    statusTextView.setText("목소리 녹음 완료 재생 버튼을 누르세요...");
+                    break;
+                case AutoVoiceReconizer.VOICE_PLAYING:
+                    statusTextView.setTextColor( Color.WHITE );
+                    statusTextView.setText("플레이중...");
+                    break;
+            }
+        }
+    };
 
     void initAudioRecorder() {
         if (mRecorder != null) { // recorder에 뭐가 들어있으면 초기화해줌
@@ -229,10 +280,10 @@ public class First_AlarmFragment extends Fragment {
 
 
 
-        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + tmp_year + "." + tmp_month+ "." + tmp_date + "."+tmp_hour+"." + tmp_mintue+".record.mp4";
+        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+".record.mp4";
         tmpPath = mPath;
-        Log.e(TAG, "tmpPath " + tmpPath);
-        Log.d(TAG, "file path is " + mPath);
+        Log.e("tmpPath " , tmpPath);
+        Log.d("file path is " , mPath);
         mRecorder.setOutputFile(mPath);
         try {
             mRecorder.prepare();
@@ -380,7 +431,7 @@ public class First_AlarmFragment extends Fragment {
             try {
             /* 서버연결 */
 
-                URL url = new URL("http://192.168.0.37/transport.php");
+                URL url = new URL("http://192.168.0.17/transport.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 // Allow Inputs
                 conn.setDoInput(true);

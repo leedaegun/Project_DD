@@ -71,4 +71,30 @@
         android:layout_marginTop="18dp"
         android:layout_below="@+id/bt_start"
         android:layout_toEndOf="@+id/tv_pitch" />
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/bt_Gyro"
+        android:layout_below="@+id/tv_pitch"
+        android:layout_marginTop="79dp"
+        android:text="테스트녹음시작" />
+
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btn_start"
+        android:layout_below="@+id/btn_start"
+        android:text="테스트녹음종료" />
+
+    <TextView
+        android:id="@+id/text_view_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_pitch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:text="TextView" />
 </RelativeLayout>
