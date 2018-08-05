@@ -33,6 +33,7 @@ public class AutoVoiceReconizer {
     public static final int VOICE_RECONIZED = 3;
     public static final int VOICE_RECORDING_FINSHED = 4;
     public static final int VOICE_PLAYING = 5;
+    public static final int FILE_PATH = 6;
 
     RecordAudio recordTask;
     PlayAudio playTask;
@@ -50,6 +51,9 @@ public class AutoVoiceReconizer {
     private int bufferReadResult;
 
     private Handler handler;
+    //private Calendar mCalendar;
+    //파일 저장 인덱스 -> 저장날짜
+    //private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
 
 
     LinkedList<short[]> recData = new LinkedList<short[]>();
@@ -62,13 +66,25 @@ public class AutoVoiceReconizer {
     private boolean voiceReconize = false;
 
     public AutoVoiceReconizer( Handler handler ){
+        /*
+        mCalendar = Calendar.getInstance();
+
+        //파일 구분을 위한 파일이 저장된 날짜
+        tmp_year=mCalendar.get(Calendar.YEAR);
+        tmp_month=mCalendar.get(Calendar.MONTH)+1;
+        tmp_date=mCalendar.get(Calendar.DATE);
+
+        tmp_hour = mCalendar.get(Calendar.HOUR);
+        tmp_mintue = mCalendar.get(Calendar.MINUTE);
+*/
         this.handler = handler;
         File path = new File(
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/sdcard/meditest/");
+                        + "/sdcard/DeepDreamer/");
         path.mkdirs();
         try {
-            recordingFile = File.createTempFile("recording", ".mp3", path);
+            recordingFile = File.createTempFile("recording", ".mp3", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
+
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create file on SD card", e);
         }
@@ -111,9 +127,12 @@ public class AutoVoiceReconizer {
             e.printStackTrace();
         }
 
+        Message msg1 = handler.obtainMessage(FILE_PATH,String.valueOf(recordingFile));
+        handler.sendMessage( msg1 );
 
         Message msg = handler.obtainMessage( VOICE_PLAYING );
         handler.sendMessage( msg );
+
 
         playTask = new PlayAudio();
         playTask.execute();
@@ -129,7 +148,7 @@ public class AutoVoiceReconizer {
         protected Void doInBackground(Void... params) {
             isPlaying = true;
 
-            int bufferSize = AudioTrack.getMinBufferSize((int)(outfrequency * 1.5),
+            int bufferSize = AudioTrack.getMinBufferSize(outfrequency,//1.5뺌
                     channelConfiguration, audioEncoding);
             short[] audiodata = new short[bufferSize / 4];
 
@@ -145,7 +164,7 @@ public class AutoVoiceReconizer {
                                 recordingFile)));
 
                 AudioTrack audioTrack = new AudioTrack(
-                        AudioManager.STREAM_MUSIC, (int) (outfrequency * 1.5),
+                        AudioManager.STREAM_MUSIC,  outfrequency ,//1.5곱한거 뺌
                         channelConfiguration, audioEncoding, bufferSize,
                         AudioTrack.MODE_STREAM);
                 ///////////////////// 약간 목소리가 변형되어 나옴.. * 1.5 를 빼면 원본 목소리가 나옴 /////
@@ -214,11 +233,11 @@ public class AutoVoiceReconizer {
                     level = (int) ( total / bufferReadResult );
 
                     // level 은 볼륨..
-                    // level 값이 2000이 넘은 경우 목소리를 체크를 시작
+                    // level 값이 2000이 넘은 경우 목소리를 체크를 시작 ->1000으로 변경 08.05
                     // 2000이 넘는 상태에서 cnt 를 증가시켜 10회 이상 지속되면 목소리가 나는 것으로 간주함
                     // voiceReconize 가 활성화 되면 시작 포인트
                     if( voiceReconize == false ){
-                        if( level > 2000 ){
+                        if( level > 1000 ){
                             if( cnt == 0 )
                                 startingIndex = recData.size();
                             cnt++;
@@ -245,7 +264,7 @@ public class AutoVoiceReconizer {
                             cnt++;
                         }
                         // 도중에 다시 소리가 커지는 경우 잠시 쉬었다가 계속 말하는 경우이므로 cnt 값은 0
-                        if( level > 2000 ){
+                        if( level > 1000 ){//1000으로 변경 08.05
                             cnt = 0;
                         }
                         // endIndex 를 저장하고 레벨체킹을 끝냄

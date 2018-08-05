@@ -200,7 +200,7 @@ public class RegisterActivity extends AppCompatActivity {
             String param = "u_id=" + sName + "&u_email=" + sEmail + "&u_pw=" + sPw  + "&u_birth=" + birth + "&u_sex=" + sex + "";
             try {
 /* 서버연결 */
-                URL url = new URL("http://192.168.0.17/register.php");
+                URL url = new URL("http://192.168.0.89/register.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setReadTimeout(15000);

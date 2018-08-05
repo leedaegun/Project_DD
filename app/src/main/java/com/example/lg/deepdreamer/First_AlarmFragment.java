@@ -216,7 +216,9 @@ public class First_AlarmFragment extends Fragment {
         btnStop.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
                 autoVoiceRecorder.stopLevelCheck();
+
             }
         });
 
@@ -245,9 +247,18 @@ public class First_AlarmFragment extends Fragment {
                     statusTextView.setTextColor( Color.YELLOW );
                     statusTextView.setText("목소리 녹음 완료 재생 버튼을 누르세요...");
                     break;
+
                 case AutoVoiceReconizer.VOICE_PLAYING:
                     statusTextView.setTextColor( Color.WHITE );
                     statusTextView.setText("플레이중...");
+                    break;
+
+                case AutoVoiceReconizer.FILE_PATH:
+                    statusTextView.setTextColor( Color.BLACK );
+                    statusTextView.setText("서버전송중...");
+                    Log.e("파일경로ㅗ로롤로로롤ㄹㄹㄹ : ",String.valueOf(msg.obj));
+                    fileTransport ft = new fileTransport(); //녹음 종료와 동시에 서버로 파일전송
+                    ft.execute(String.valueOf(msg.obj));
                     break;
             }
         }
@@ -431,7 +442,7 @@ public class First_AlarmFragment extends Fragment {
             try {
             /* 서버연결 */
 
-                URL url = new URL("http://192.168.0.17/transport.php");
+                URL url = new URL("http://192.168.0.89/transport.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 // Allow Inputs
                 conn.setDoInput(true);
