@@ -46,7 +46,7 @@ public class AutoVoiceReconizer {
 
     int frequency = 11025;
     int outfrequency = frequency*CUSTOM_FREQ_SOAP;
-    int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+    int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private int bufferReadResult;
 
@@ -83,7 +83,7 @@ public class AutoVoiceReconizer {
                         + "/sdcard/DeepDreamer/");
         path.mkdirs();
         try {
-            recordingFile = File.createTempFile("recording", ".mp3", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
+            recordingFile = File.createTempFile("recording", ".mp4", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
 
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create file on SD card", e);
@@ -130,12 +130,12 @@ public class AutoVoiceReconizer {
         Message msg1 = handler.obtainMessage(FILE_PATH,String.valueOf(recordingFile));
         handler.sendMessage( msg1 );
 
-        Message msg = handler.obtainMessage( VOICE_PLAYING );
-        handler.sendMessage( msg );
+        //Message msg = handler.obtainMessage( VOICE_PLAYING );
+        //handler.sendMessage( msg );
 
 
-        playTask = new PlayAudio();
-        playTask.execute();
+        //playTask = new PlayAudio();
+        //playTask.execute();
 
     }
 
@@ -166,6 +166,13 @@ public class AutoVoiceReconizer {
                 AudioTrack audioTrack = new AudioTrack(
                         AudioManager.STREAM_MUSIC,  outfrequency ,//1.5곱한거 뺌
                         channelConfiguration, audioEncoding, bufferSize,
+                        AudioTrack.MODE_STREAM);
+                /* 대체 함수
+                AudioTrack audioTrack = new AudioTrack(new AudioAttributes
+                        .Builder().setUsage()
+                        .setContentType()
+                        .build(),
+                        audioEncoding, bufferSize,
                         AudioTrack.MODE_STREAM);
                 ///////////////////// 약간 목소리가 변형되어 나옴.. * 1.5 를 빼면 원본 목소리가 나옴 /////
 				/*
@@ -237,7 +244,7 @@ public class AutoVoiceReconizer {
                     // 2000이 넘는 상태에서 cnt 를 증가시켜 10회 이상 지속되면 목소리가 나는 것으로 간주함
                     // voiceReconize 가 활성화 되면 시작 포인트
                     if( voiceReconize == false ){
-                        if( level > 1000 ){
+                        if( level > 100 ){
                             if( cnt == 0 )
                                 startingIndex = recData.size();
                             cnt++;
@@ -260,11 +267,11 @@ public class AutoVoiceReconizer {
                     if( voiceReconize == true ){
                         // 목소리가 끝나고 500이하로 떨어진 상태가 40이상 지속된 경우
                         // 더이상 말하지 않는것으로 간주.. 레벨 체킹 끝냄
-                        if( level < 500 ){
+                        if( level < 50 ){
                             cnt++;
                         }
                         // 도중에 다시 소리가 커지는 경우 잠시 쉬었다가 계속 말하는 경우이므로 cnt 값은 0
-                        if( level > 1000 ){//1000으로 변경 08.05
+                        if( level > 100 ){//1000으로 변경 08.05
                             cnt = 0;
                         }
                         // endIndex 를 저장하고 레벨체킹을 끝냄

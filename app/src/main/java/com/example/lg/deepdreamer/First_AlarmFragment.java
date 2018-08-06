@@ -11,7 +11,6 @@ import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -33,26 +32,25 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class First_AlarmFragment extends Fragment {
-    private TextView tv_roll, tv_pitch,test;
-    private Button bt_to_Alarm_Setting, bt_start, bt_Gyro;
+    private TextView tv_roll, tv_pitch;
+    private Button bt_to_Alarm_Setting, bt_start;
 
     //MediaPlayer mPlayer = null;
     //녹음을 위한 변수
     MediaRecorder mRecorder = null;
-    private String mPath,tmpPath = null;
+    //private String mPath,tmpPath = null;
     boolean isRecording = false;
-    Calendar mCalendar;
-    //파일 저장 인덱스 -> 저장날짜
-    private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
+
+    private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
+    private TextView statusTextView;
+
+    //파일 저장 인덱스 -> 저장날짜 private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
 
     //Using the Accelometer & Gyroscoper 자이로센서 변수
 
@@ -75,16 +73,10 @@ public class First_AlarmFragment extends Fragment {
     private double RAD2DGR = 180 / Math.PI;
     private static final float NS2S = 1.0f/1000000000.0f;
 
-    private boolean running=false;
 
     //서비스 변수
-    private AlarmService mAlamService;
-    //녹음 테스트 변수
-    private Button btnStart;
-    private Button btnStop;
-    private AutoVoiceReconizer autoVoiceRecorder;
+    //private AlarmService mAlamService;
 
-    private TextView statusTextView;
 
     public First_AlarmFragment() {
         // Required empty public constructor
@@ -121,7 +113,8 @@ public class First_AlarmFragment extends Fragment {
 
         tv_roll = layout.findViewById(R.id.tv_roll);
         tv_pitch = layout.findViewById(R.id.tv_pitch);
-        test = layout.findViewById(R.id.test);
+
+
         //알람설정버튼
         bt_to_Alarm_Setting = layout.findViewById(R.id.bt_to_Alarm_Setting);
         bt_to_Alarm_Setting.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +125,18 @@ public class First_AlarmFragment extends Fragment {
 
             }
         });
+
+        //녹음 초기화
+        autoVoiceRecorder = new AutoVoiceReconizer( handler );
+        statusTextView = layout.findViewById( R.id.text_view_status );
+        statusTextView.setText("준비..");
+
+        //자이로 센서 초기화 Using the Gyroscope & Accelometer
+        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        //Using the Accelometer
+        mGgyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mGyroLis = new GyroscopeListener();
+
         //측정시작버튼
         bt_start = layout.findViewById(R.id.bt_start);
         bt_start.setOnClickListener(new View.OnClickListener() {
@@ -140,10 +145,11 @@ public class First_AlarmFragment extends Fragment {
                 /* 실행 중일 때 -> 중지 */
                 if (isRecording) {
 
-                    mRecorder.stop();
-
-                    fileTransport ft = new fileTransport(); //녹음 종료와 동시에 서버로 파일전송
-                    ft.execute(tmpPath);
+                    //mRecorder.stop();
+                    autoVoiceRecorder.stopLevelCheck();//녹음 종료
+                    mSensorManager.unregisterListener(mGyroLis);//자이로 측정종료
+                    //fileTransport ft = new fileTransport(); //녹음 종료와 동시에 서버로 파일전송
+                    //ft.execute(tmpPath);
 
                     isRecording = false;
                     bt_start.setText("측정시작");
@@ -154,8 +160,10 @@ public class First_AlarmFragment extends Fragment {
                 /* 실행 중이지 않을 때 -> 실행 */
                 else {
 
-                    initAudioRecorder();
-                    mRecorder.start();
+                    //initAudioRecorder();
+                    //mRecorder.start();
+                    autoVoiceRecorder.startLevelCheck();//녹음 측정시작
+                    mSensorManager.registerListener(mGyroLis, mGgyroSensor, SensorManager.SENSOR_DELAY_UI);//자이로측정시작
 
 
                     isRecording = true;
@@ -165,65 +173,8 @@ public class First_AlarmFragment extends Fragment {
                 }
             }
         });
-        //Using the Gyroscope & Accelometer
-        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-
-        //Using the Accelometer
-        mGgyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        mGyroLis = new GyroscopeListener();
-
-        //Touch Listener for Accelometer
-        bt_Gyro = layout.findViewById(R.id.bt_Gyro);
-        bt_Gyro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                /* 실행 중이지 않을 때 -> 실행 */
-                if(!running){
-                    
-                    running = true;
-                    bt_Gyro.setText("자이로측정종료");
-                    Toast.makeText(getActivity(), "측정을 시작합니다.", Toast.LENGTH_SHORT).show();
-                    mSensorManager.registerListener(mGyroLis, mGgyroSensor, SensorManager.SENSOR_DELAY_UI);
 
 
-                }
-
-                /* 실행 중일 때 -> 중지 */
-                else
-                {
-                    running = false;
-                    bt_Gyro.setText("자이로측정시작");
-                    Toast.makeText(getActivity(), "측정을 종료합니다.", Toast.LENGTH_SHORT).show();
-                    mSensorManager.unregisterListener(mGyroLis);
-
-                }
-            }
-        });
-        autoVoiceRecorder = new AutoVoiceReconizer( handler );
-        statusTextView = layout.findViewById( R.id.text_view_status );
-        btnStart = layout.findViewById( R.id.btn_start );
-        btnStop = layout.findViewById( R.id.btn_stop );
-        statusTextView.setText("준비..");
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoVoiceRecorder.startLevelCheck();
-            }
-        });
-
-        btnStop.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-                autoVoiceRecorder.stopLevelCheck();
-
-            }
-        });
-
-
-       
 
 
 
@@ -236,23 +187,23 @@ public class First_AlarmFragment extends Fragment {
                     statusTextView.setText("준비...");
                     break;
                 case AutoVoiceReconizer.VOICE_RECONIZING:
-                    statusTextView.setTextColor( Color.YELLOW );
+                    statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("목소리 인식중...");
                     break;
                 case AutoVoiceReconizer.VOICE_RECONIZED :
-                    statusTextView.setTextColor( Color.GREEN );
+                    statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("목소리 감지... 녹음중...");
                     break;
                 case AutoVoiceReconizer.VOICE_RECORDING_FINSHED:
-                    statusTextView.setTextColor( Color.YELLOW );
+                    statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("목소리 녹음 완료 재생 버튼을 누르세요...");
                     break;
-
+/*
                 case AutoVoiceReconizer.VOICE_PLAYING:
                     statusTextView.setTextColor( Color.WHITE );
                     statusTextView.setText("플레이중...");
                     break;
-
+*/
                 case AutoVoiceReconizer.FILE_PATH:
                     statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("서버전송중...");
@@ -263,7 +214,7 @@ public class First_AlarmFragment extends Fragment {
             }
         }
     };
-
+/*
     void initAudioRecorder() {
         if (mRecorder != null) { // recorder에 뭐가 들어있으면 초기화해줌
             mRecorder.stop();
@@ -302,7 +253,7 @@ public class First_AlarmFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
+*/
     @Override
     public void onResume() {
         super.onResume();/*
@@ -333,11 +284,11 @@ public class First_AlarmFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-
+/*
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
-        }
+        }*/
         mSensorManager.unregisterListener(mGyroLis);
 
     }
@@ -349,7 +300,7 @@ public class First_AlarmFragment extends Fragment {
 
 
 
-
+/*
     private class RecorderTask extends TimerTask {
 
         private MediaRecorder mRecorder;
@@ -369,7 +320,7 @@ public class First_AlarmFragment extends Fragment {
            });
        }
 
-    }
+    }*/
 
     private class GyroscopeListener implements SensorEventListener {
 
