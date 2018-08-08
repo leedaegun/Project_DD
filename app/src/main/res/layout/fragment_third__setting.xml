@@ -9,35 +9,44 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout">
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/bt_goto_detail_setting"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="상세설정"
+            android:textColor="#5aeaca"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/bt_Logout"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:layout_gravity="center"
-            android:textStyle="bold"
+            android:text="로그아웃"
             android:textColor="#5aeaca"
             android:textSize="20dp"
-            android:text="로그아웃" />
+            android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/bt_goto_detail_setting"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:textColor="#5aeaca"
-            android:textSize="20dp"
-            android:text="상세설정" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/bt_play"
@@ -45,16 +54,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textStyle="bold"
+            android:layout_weight="1"
+            android:text="녹음듣기"
             android:textColor="#5aeaca"
             android:textSize="20dp"
-            android:text="녹음듣기" />
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv"
+        <ListView
+            android:id="@+id/lv_record"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_height="200dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"></ListView>
 
     </LinearLayout>
 

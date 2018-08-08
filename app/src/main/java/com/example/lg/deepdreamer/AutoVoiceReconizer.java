@@ -80,7 +80,7 @@ public class AutoVoiceReconizer {
         this.handler = handler;
         File path = new File(
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/sdcard/DeepDreamer/");
+                        + "/DeepDreamer/");
         path.mkdirs();
         try {
             recordingFile = File.createTempFile("recording", ".mp4", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
@@ -130,23 +130,27 @@ public class AutoVoiceReconizer {
         Message msg1 = handler.obtainMessage(FILE_PATH,String.valueOf(recordingFile));
         handler.sendMessage( msg1 );
 
-        //Message msg = handler.obtainMessage( VOICE_PLAYING );
-        //handler.sendMessage( msg );
 
-
-        //playTask = new PlayAudio();
-        //playTask.execute();
 
     }
 
-    public void playVoice(){
+    public void playVoice(String filename){
 
+        //선택한 파일 재생
+        Message msg = handler.obtainMessage( VOICE_PLAYING );
+        handler.sendMessage( msg );
+        Log.i("playVoice : 클릭한 파일 이름",filename);
+        File inputFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer/" +filename);
+        Log.i("playVoice : 인풋값 파일 경로",Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer/" +filename);
+        playTask = new PlayAudio();
+        playTask.execute(inputFile);
     }
 
-    private class PlayAudio extends AsyncTask<Void, Integer, Void> {
+    private class PlayAudio extends AsyncTask<File, Integer, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(File... params) {
             isPlaying = true;
+            Log.i("함수안 파일 경로",  params[0].toString());
 
             int bufferSize = AudioTrack.getMinBufferSize(outfrequency,//1.5뺌
                     channelConfiguration, audioEncoding);
@@ -161,7 +165,7 @@ public class AutoVoiceReconizer {
             try {
                 DataInputStream dis = new DataInputStream(
                         new BufferedInputStream(new FileInputStream(
-                                recordingFile)));
+                                params[0])));//recordingFile -> 경로 입력값 변경
 
                 AudioTrack audioTrack = new AudioTrack(
                         AudioManager.STREAM_MUSIC,  outfrequency ,//1.5곱한거 뺌
@@ -199,8 +203,8 @@ public class AutoVoiceReconizer {
                 Log.e("AudioTrack", "Playback Failed");
             }
 
-            Message msg = handler.obtainMessage( VOICE_READY );
-            handler.sendMessage( msg );
+            //Message msg = handler.obtainMessage( VOICE_READY );
+            //handler.sendMessage( msg );
 
             return null;
         }
@@ -244,7 +248,7 @@ public class AutoVoiceReconizer {
                     // 2000이 넘는 상태에서 cnt 를 증가시켜 10회 이상 지속되면 목소리가 나는 것으로 간주함
                     // voiceReconize 가 활성화 되면 시작 포인트
                     if( voiceReconize == false ){
-                        if( level > 100 ){
+                        if( level > 1000 ){
                             if( cnt == 0 )
                                 startingIndex = recData.size();
                             cnt++;
@@ -267,11 +271,11 @@ public class AutoVoiceReconizer {
                     if( voiceReconize == true ){
                         // 목소리가 끝나고 500이하로 떨어진 상태가 40이상 지속된 경우
                         // 더이상 말하지 않는것으로 간주.. 레벨 체킹 끝냄
-                        if( level < 50 ){
+                        if( level < 500 ){
                             cnt++;
                         }
                         // 도중에 다시 소리가 커지는 경우 잠시 쉬었다가 계속 말하는 경우이므로 cnt 값은 0
-                        if( level > 100 ){//1000으로 변경 08.05
+                        if( level > 1000 ){//1000으로 변경 08.05
                             cnt = 0;
                         }
                         // endIndex 를 저장하고 레벨체킹을 끝냄

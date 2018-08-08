@@ -2,18 +2,26 @@ package com.example.lg.deepdreamer;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -21,12 +29,9 @@ import android.widget.TextView;
         */
 public class Third_SettingFragment extends Fragment {
 
-    MediaPlayer mPlayer;
-    String mPath = null;
-    boolean isPlaying = false;
     private Button bt_Logout,bt_goto_detail_setting,bt_play;
-    TextView tv;
-    public SharedPreferences setting;
+    ListView listView;
+    private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
 
     public Third_SettingFragment() {
         // Required empty public constructor
@@ -46,7 +51,7 @@ public class Third_SettingFragment extends Fragment {
         bt_Logout=layout.findViewById(R.id.bt_Logout);
         bt_goto_detail_setting=layout.findViewById(R.id.bt_goto_detail_setting);
         bt_play = layout.findViewById(R.id.bt_play);
-        tv=layout.findViewById(R.id.tv);
+
 
         bt_goto_detail_setting.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -80,42 +85,62 @@ public class Third_SettingFragment extends Fragment {
         bt_play.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if (isPlaying == false) {
-                    try {
-                        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.mp4";
-                        mPlayer.setDataSource(mPath);
-                        mPlayer.prepare();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mPlayer.start();
 
-                    isPlaying = true;
-                    bt_play.setText("그만듣기");
-                }
-                else {
-                    mPlayer.stop();
-
-                    isPlaying = false;
-                    bt_play.setText("녹음듣기");
-                }
             }
         });
-        mPlayer = new MediaPlayer();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+        listView = layout.findViewById(R.id.lv_record);
+        //파일목록 로딩
+        final String path = Environment.getExternalStorageDirectory().getAbsolutePath() +"/DeepDreamer/";
+        File list = new File(path);
+        if(!list.isDirectory()){
+            if(!list.mkdirs()){}
+        }
+        File[] files = list.listFiles();
+        List<String> fileNameList = new ArrayList<>();
+        for(int i=0;i<files.length;i++){
+            fileNameList.add(files[i].getName());
+        }
+
+        autoVoiceRecorder = new AutoVoiceReconizer(handler );//재생클래스 선언
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,fileNameList);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
-                isPlaying = false;
-                bt_play.setText("녹음듣기");
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+
+                // get TextView's Text.
+                //File playFile = (File) parent.getItemAtPosition(position) ;//클릭한거 파일화
+                String playFile = (String) parent.getItemAtPosition(position) ;
+                Toast.makeText(getActivity(),"파일 재생..", Toast.LENGTH_SHORT).show();
+                Log.i("클릭한 파일 이름",playFile);
+                autoVoiceRecorder.playVoice(playFile);//파일재생
+                // TODO : use strText
             }
-        });
+        }) ;
 
 
 
-        //tv.setText(setting.getString("id",""));
+
+
 
 
         return layout;
     }
+
+    //녹음재생 핸들러
+    Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            switch( msg.what ){
+                case AutoVoiceReconizer.VOICE_PLAYING:
+                    Toast.makeText(getActivity(),"파일 재생..", Toast.LENGTH_SHORT).show();
+                    break;
+
+
+            }
+        }
+    };
+
 
 }

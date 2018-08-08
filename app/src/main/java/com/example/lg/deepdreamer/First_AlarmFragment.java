@@ -86,7 +86,7 @@ public class First_AlarmFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }/*
+    }/* 바인딩 서비스
     private ServiceConnection mAlamService = new ServiceConnection() {
 
         @Override
@@ -350,7 +350,7 @@ public class First_AlarmFragment extends Fragment {
 
                 tv_roll.setText("roll : "+roll);
                 tv_pitch.setText("pitch : "+pitch);
-
+/*
                 Log.e("LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
                         + "           [Y]:" + String.format("%.4f", event.values[1])
                         + "           [Z]:" + String.format("%.4f", event.values[2])
@@ -358,7 +358,7 @@ public class First_AlarmFragment extends Fragment {
                         + "           [Roll]: " + String.format("%.1f", roll*RAD2DGR)
                         + "           [Yaw]: " + String.format("%.1f", yaw*RAD2DGR)
                         + "           [dt]: " + String.format("%.4f", dt));
-
+*/
             }
         }
 
