@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center|left"
-            android:text="알람 날짜"
+            android:text="Button"
             android:textColor="#3c5b54"
             android:textSize="15dp"
             android:textStyle="bold" />

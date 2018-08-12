@@ -28,7 +28,7 @@ public class AlarmService extends Service {
     @Override
     public int onStartCommand(Intent intent,int flags, int startId){
         Toast.makeText(this,"알람이 울립니다.",Toast.LENGTH_SHORT).show();
-        return START_NOT_STICKY;
+        return Service.START_REDELIVER_INTENT;
         //return Service.START_STICKY;서비스 강제 종료시 다시 Service 재시작하지만 서비스자체를 null로 초기화 시켜 다시 시작
         //return Service.START_NOT_STICKY;   강제종료시 Service 재시작 하지 않음
         //return Service.START_REDELIVER_INTENT;  STICKY와 같지만 서비스자체를 null로 초기화 하지 않고 그대로 유지하며 다시 시작

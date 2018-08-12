@@ -25,7 +25,7 @@ import static com.example.lg.deepdreamer.R.id.set;
 public class AlarmSettingActivity extends AppCompatActivity implements TimePicker.OnTimeChangedListener{
 
 
-    TextView tv;
+    private TextView tv;
     // 알람 메니저
     private AlarmManager mManager;
     // 설정 일시
@@ -47,7 +47,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         final DBHelper dbHelper = new DBHelper(getApplicationContext(),"DeepDreamerAlarm.db",null,1);
 
         tv = (TextView)findViewById(R.id.tv);
-
+        //tv.setText("준비 ..");
 
         //알람 매니저를 취득
         mManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -59,11 +59,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         tmp_date =mCalendar.get(Calendar.DATE);
         tmp_month=mCalendar.get(Calendar.MONTH);
         tmp_year=mCalendar.get(Calendar.YEAR);
-        String initMsg = String.format("%d 년 %d 월 %d 일",tmp_year , tmp_month, tmp_date);
-        //alarmDialog.setText(initMsg);
 
-        Log.i("처음 시간 설정값",mCalendar.getTime().toString());
-        Log.i("intiMsg : ",initMsg);
         //셋 버튼, 리셋버튼의 리스너를 등록
         setContentView(R.layout.activity_alarm_setting);
         Button b = (Button)findViewById(set);
@@ -92,7 +88,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         //DATE PICKER DIALOG
 
         alarmDialog = (Button)findViewById(R.id.btn_alarm_dialog);
-
+        initDate();
         alarmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,6 +184,26 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     public void onTimeChanged (TimePicker view, int hourOfDay, int minute) {
         mCalendar.set (tmp_year, tmp_month, tmp_date, hourOfDay, minute);
         Log.i("시간이 바뀌었습니다",mCalendar.getTime().toString());
+    }
+    private  void initDate(){
+        final String initMsg = String.format("%d 년 %d 월 %d 일",tmp_year , tmp_month+1, tmp_date);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // runOnUiThread를 추가하고 그 안에 UI작업을 한다.
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        alarmDialog.setText(initMsg);
+                    }
+                });
+            }
+        }).start();
+        Log.i("initMsg : ",initMsg);
+        //alarmDialog.setText(initMsg);
+
+        Log.i("처음 시간 설정값",mCalendar.getTime().toString());
+        Log.i("intiMsg : ",initMsg);
     }
 
 

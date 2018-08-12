@@ -42,9 +42,8 @@ public class MainActivity extends AppCompatActivity {
     public SharedPreferences setting;
     //SharedPreferences.Editor editor;
     final int MY_PERMISSION_REQUEST_STORAGE = 200;
-    String s;
-    EditText et_Email,et_Pw;
-    String sEmail,sPw;
+    private EditText et_Email,et_Pw;
+    private String sEmail,sPw;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class loginDB extends AsyncTask<Void, Integer, Void> {
+    private class loginDB extends AsyncTask<Void, Integer, Void> {
         String data = "";
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
         @Override
@@ -290,12 +289,13 @@ public class MainActivity extends AppCompatActivity {
         backPressCloseHandler.onBackPressed();
 
     }
-    public class BackPressCloseHandler {
+    // 취소 두 번 종료
+    private class BackPressCloseHandler {
         private long backKeyPressedTime = 0;
         private Toast toast;
         private Activity activity;
-        public BackPressCloseHandler(Activity context) { this.activity = context; }
-        public void onBackPressed() {
+        private BackPressCloseHandler(Activity context) { this.activity = context; }
+        private void onBackPressed() {
             if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
                 backKeyPressedTime = System.currentTimeMillis();
                 showGuide();
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                 activity.finish();
                 toast.cancel(); }
         }
-        public void showGuide() {
+        private void showGuide() {
             toast = Toast.makeText(activity, "\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT); toast.show(); }
     }
 
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_STORAGE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                /*if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("PERMISSION", "Permission Allow");
 
                     //알림창에서 권한을 허용했을때
@@ -324,21 +324,60 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     //알림창에서 권한을 거부했을때 앱종료
                 }
-                break;
+                break;*/
+                if (grantResults.length > 0)
+                {
+                    for (int i=0; i<grantResults.length; ++i)
+                    {
+                        if (grantResults[i] == PackageManager.PERMISSION_DENIED)
+                        {
+                            // 하나라도 거부한다면.
+                            /*
+                            new AlertDialog.Builder(this).setTitle("알림").setMessage("권한을 허용해주셔야 앱을 이용할 수 있습니다.")
+                                    .setPositiveButton("종료", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                            finish();
+                                        }
+                                    }).setNegativeButton("권한 설정", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                            .setData(Uri.parse("package:" + getApplicationContext().getPackageName()));
+                                    getApplicationContext().startActivity(intent);
+                                }
+                            }).setCancelable(false).show();
+                            return;*/
+                            finish();
+                        }
+                    }
+                    //startApp();
+                }
         }
 
     }
     private boolean checkPermission() {
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)//녹음 권한 -> 녹음 측정시
+                    != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)//외부저장소 권한 -> 녹음한거 저장
+                    != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS) //센서 권한 -> 자이로센서측정
+                            != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)//주소록일기권한-> 회원가입시 이메일 전송
+                            != PackageManager.PERMISSION_GRANTED) {
                 //권한 허용한적이 없을때
+
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
                     //권한을 한번이라도 거부했을때
                     Toast.makeText(this, "please Read Phone State", Toast.LENGTH_SHORT).show();
                 }
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSION_REQUEST_STORAGE);
+                //권한 목록 4개
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.BODY_SENSORS}, MY_PERMISSION_REQUEST_STORAGE);
+                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},MY_PERMISSION_REQUEST_STORAGE);
                 //권한 허용할것인지 알림창 띄우기
             } else {
 
