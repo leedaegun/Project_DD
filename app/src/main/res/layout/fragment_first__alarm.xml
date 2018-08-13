@@ -60,4 +60,13 @@
         android:text="TextView"
         android:layout_below="@+id/tv_pitch"
         android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/bt_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/bt_start"
+        android:layout_below="@+id/text_view_status"
+        android:layout_marginTop="145dp"
+        android:text="서비스 시작" />
 </RelativeLayout>

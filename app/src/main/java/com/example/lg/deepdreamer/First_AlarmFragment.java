@@ -39,14 +39,14 @@ import java.net.URL;
  */
 public class First_AlarmFragment extends Fragment {
     private TextView tv_roll, tv_pitch;
-    private Button bt_to_Alarm_Setting, bt_start;
+    private Button bt_to_Alarm_Setting, bt_start,bt_service;
 
     //MediaPlayer mPlayer = null;
     //녹음을 위한 변수
     MediaRecorder mRecorder = null;
     //private String mPath,tmpPath = null;
     boolean isRecording = false;
-
+    boolean isService = false;
     private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
     private TextView statusTextView;
 
@@ -73,10 +73,9 @@ public class First_AlarmFragment extends Fragment {
     private double RAD2DGR = 180 / Math.PI;
     private static final float NS2S = 1.0f/1000000000.0f;
 
-
     //서비스 변수
     //private AlarmService mAlamService;
-
+    Intent mService;
 
     public First_AlarmFragment() {
         // Required empty public constructor
@@ -110,7 +109,7 @@ public class First_AlarmFragment extends Fragment {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_first__alarm, container, false);
 
-
+        mService = new Intent(getActivity(),GyroRecordService.class);
         tv_roll = layout.findViewById(R.id.tv_roll);
         tv_pitch = layout.findViewById(R.id.tv_pitch);
 
@@ -165,10 +164,34 @@ public class First_AlarmFragment extends Fragment {
                     autoVoiceRecorder.startLevelCheck();//녹음 측정시작
                     mSensorManager.registerListener(mGyroLis, mGgyroSensor, SensorManager.SENSOR_DELAY_UI);//자이로측정시작
 
-
                     isRecording = true;
                     bt_start.setText("측정종료");
                     Toast.makeText(getActivity(), "측정을 시작합니다.", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        });
+
+        bt_service=layout.findViewById(R.id.bt_service);
+        bt_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isService) {
+                    isService = false;
+                    bt_service.setText("서비스 시작");
+                    getActivity().stopService(mService);
+
+
+
+                }
+
+                /* 실행 중이지 않을 때 -> 실행 */
+                else {
+                    isService = true;
+                    bt_service.setText("서비스 종료");
+                    getActivity().startService(mService);
+
 
                 }
             }
@@ -481,6 +504,8 @@ public class First_AlarmFragment extends Fragment {
         }
 
     }
+
+
 
 
 
