@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 /**
  * Created by lg on 2018-07-06.
  */
-
+//설정 프레그먼트 내용 아직 없음
 public class SettingPreferenceFragment extends PreferenceFragment {
     SharedPreferences prefs;
     @Override

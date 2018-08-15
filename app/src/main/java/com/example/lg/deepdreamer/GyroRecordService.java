@@ -20,6 +20,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+//자이로 센서,녹음 측정 클래스
 public  class GyroRecordService extends Service implements SensorEventListener {
 
     //알림 매니저
@@ -72,7 +73,7 @@ public  class GyroRecordService extends Service implements SensorEventListener {
     public int onStartCommand(Intent intent,int flags, int startId){
         notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);//알람매니저 초기화
 
-        thread = new ServiceThread(notifiHandler);
+        thread = new ServiceThread(notifiHandler);//측정시 알림 있도록 헨들러 설정
         thread.start();//알림 쓰레드 시작
 
         autoVoiceRecorder = new AutoVoiceReconizer( handler );//녹음 클래스 객체

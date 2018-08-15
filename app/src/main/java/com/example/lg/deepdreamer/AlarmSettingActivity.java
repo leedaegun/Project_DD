@@ -1,5 +1,6 @@
 package com.example.lg.deepdreamer;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
@@ -88,7 +89,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         //DATE PICKER DIALOG
 
         alarmDialog = (Button)findViewById(R.id.btn_alarm_dialog);
-        initDate();
+        initDate();//버튼 현재날짜로
         alarmDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,25 +145,53 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
 
 
-        Intent intent = new  Intent(this.getIntent());
+        //Intent intent = new  Intent(this.getIntent());
 
 
     }
     //알람의 설정
     private void setAlarm() {
-        //tmpCalendar = Calendar.getInstance();
+        currentCalendar = Calendar.getInstance();
         //tmpCalendar.set(Calendar.YEAR,Calendar.MONTH,Calendar.DATE,Calendar.HOUR_OF_DAY,Calendar.MINUTE,Calendar.SECOND);
         //Log.e("tmpCalender : ",Long.toString(System.currentTimeMillis()));
         //Log.e("before : ",Long.toString(mCalendar.getTimeInMillis()));
-        if(false){
+        if(mCalendar.compareTo(currentCalendar)<=0){
             Toast.makeText(AlarmSettingActivity.this,"현재시간보다 전입니다. 알람시간을 다시 설정하세요.",Toast.LENGTH_LONG).show();
         }
         else{
             mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());
-            Toast.makeText(AlarmSettingActivity.this,"알람이 설정되었습니다.",Toast.LENGTH_LONG).show();
+            int date = mCalendar.get(mCalendar.DATE)-currentCalendar.get(Calendar.DATE);
+            int hour = mCalendar.get(mCalendar.HOUR)-currentCalendar.get(Calendar.HOUR);
+            int minute = mCalendar.get(mCalendar.MINUTE)-currentCalendar.get(Calendar.MINUTE);
+
+            if(minute<0){
+                minute = 60 + minute;
+                hour = hour -1;
+            }
+            if(hour<0){
+                hour = 24 + hour;
+                date = date -1;
+            }
+
+            if(date==0){
+                if(hour==0){
+                    Toast.makeText(AlarmSettingActivity.this,minute+"분 후 알람이 울립니다.",Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(AlarmSettingActivity.this,date+"시간" +minute+"분 후 알람이 울립니다.",Toast.LENGTH_LONG).show();
+                }
+            }
+            else{
+                Toast.makeText(AlarmSettingActivity.this,date+"일"+hour+"시간" +minute+"분 후 알람이 울립니다.",Toast.LENGTH_LONG).show();
+            }
+
             Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
             Intent intent = new Intent(AlarmSettingActivity.this,RealMainActivity.class);
-            startActivity(intent);
+            Bundle bundle = new Bundle();
+            bundle.putString("alarmTime",String.format("%d 시 %d 분",mCalendar.get(mCalendar.HOUR) , mCalendar.get(mCalendar.MINUTE)));
+            intent.putExtras(bundle);
+            setResult(Activity.RESULT_OK,intent);
+            //startActivity(intent);
             finish();
         }
 
@@ -185,7 +214,9 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         mCalendar.set (tmp_year, tmp_month, tmp_date, hourOfDay, minute);
         Log.i("시간이 바뀌었습니다",mCalendar.getTime().toString());
     }
+
     private  void initDate(){
+        //현재날짜로 설정
         final String initMsg = String.format("%d 년 %d 월 %d 일",tmp_year , tmp_month+1, tmp_date);
         new Thread(new Runnable() {
             @Override

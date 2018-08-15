@@ -33,7 +33,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//로그인 화면
 public class MainActivity extends AppCompatActivity {
+
     private BackPressCloseHandler backPressCloseHandler;
     private CheckBox auto_Login,save_ID;
     boolean loginChecked;

@@ -8,7 +8,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,10 +41,10 @@ import java.net.URL;
 public class First_AlarmFragment extends Fragment {
     private TextView tv_roll, tv_pitch;
     private Button bt_to_Alarm_Setting, bt_start,bt_service;
-
+    String getAlarmTime=null;
     //MediaPlayer mPlayer = null;
     //녹음을 위한 변수
-    MediaRecorder mRecorder = null;
+    //MediaRecorder mRecorder = null;
     //private String mPath,tmpPath = null;
     boolean isRecording = false;
     boolean isService = false;
@@ -74,7 +75,7 @@ public class First_AlarmFragment extends Fragment {
     private static final float NS2S = 1.0f/1000000000.0f;
 
     //서비스 변수
-    //private AlarmService mAlamService;
+
     Intent mService;
 
     public First_AlarmFragment() {
@@ -85,21 +86,7 @@ public class First_AlarmFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }/* 바인딩 서비스
-    private ServiceConnection mAlamService = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            // 서비스에 연결되었습니다.
-            mAlamService = ((AlarmService.Binder)binder).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // 서비스가 비정상적으로 종료되었습니다.
-            mAlamService = null;
-        }
-    };*/
+    }
 
 
 
@@ -113,14 +100,14 @@ public class First_AlarmFragment extends Fragment {
         tv_roll = layout.findViewById(R.id.tv_roll);
         tv_pitch = layout.findViewById(R.id.tv_pitch);
 
-
         //알람설정버튼
         bt_to_Alarm_Setting = layout.findViewById(R.id.bt_to_Alarm_Setting);
         bt_to_Alarm_Setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AlarmSettingActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,101);
+
 
             }
         });
@@ -237,53 +224,65 @@ public class First_AlarmFragment extends Fragment {
             }
         }
     };
-/*
-    void initAudioRecorder() {
-        if (mRecorder != null) { // recorder에 뭐가 들어있으면 초기화해줌
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-        }
 
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//output file 에 audio track 이 포함되는과정
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);//이거 설정해제해보기 저장되나안되나
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);//
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new RecorderTask(mRecorder), 0, 500);
-
-        mCalendar = Calendar.getInstance();
-
-        //파일 구분을 위한 파일이 저장된 날짜
-        tmp_year=mCalendar.get(Calendar.YEAR);
-        tmp_month=mCalendar.get(Calendar.MONTH)+1;
-        tmp_date=mCalendar.get(Calendar.DATE);
-
-        tmp_hour = mCalendar.get(Calendar.HOUR);
-        tmp_mintue = mCalendar.get(Calendar.MINUTE);
-
-
-
-
-        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+".record.mp4";
-        tmpPath = mPath;
-        Log.e("tmpPath " , tmpPath);
-        Log.d("file path is " , mPath);
-        mRecorder.setOutputFile(mPath);
-        try {
-            mRecorder.prepare();
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==101){
+            if(resultCode==RESULT_OK){
+                //getAlarmTime = getArguments().getString("alarmTime");
+                //if(getAlarmTime!=null)
+                Bundle bundle = data.getExtras();
+                getAlarmTime = bundle.getString("alarmTime");
+                bt_to_Alarm_Setting.setText(getAlarmTime);
+            }
         }
     }
-*/
+
+    /*
+        void initAudioRecorder() {
+            if (mRecorder != null) { // recorder에 뭐가 들어있으면 초기화해줌
+                mRecorder.stop();
+                mRecorder.release();
+                mRecorder = null;
+            }
+
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//output file 에 audio track 이 포함되는과정
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);//이거 설정해제해보기 저장되나안되나
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);//
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new RecorderTask(mRecorder), 0, 500);
+
+            mCalendar = Calendar.getInstance();
+
+            //파일 구분을 위한 파일이 저장된 날짜
+            tmp_year=mCalendar.get(Calendar.YEAR);
+            tmp_month=mCalendar.get(Calendar.MONTH)+1;
+            tmp_date=mCalendar.get(Calendar.DATE);
+
+            tmp_hour = mCalendar.get(Calendar.HOUR);
+            tmp_mintue = mCalendar.get(Calendar.MINUTE);
+
+
+
+
+            mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+".record.mp4";
+            tmpPath = mPath;
+            Log.e("tmpPath " , tmpPath);
+            Log.d("file path is " , mPath);
+            mRecorder.setOutputFile(mPath);
+            try {
+                mRecorder.prepare();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    */
     @Override
     public void onResume() {
         super.onResume();/*
-        if (mAlamService == null) {
-            onBindService();
-        }
-        startService(new Intent(getApplicationContext(), AlarmService.class));
+
 */
 
     }
@@ -307,19 +306,12 @@ public class First_AlarmFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-/*
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
-        }*/
+
+
         mSensorManager.unregisterListener(mGyroLis);
 
     }
-    /*
-    private void onBindService() {
-        Intent intent = new Intent(this, AlarmService.class);
-        bindService(intent, mAlamServiceConnection, Context.BIND_AUTO_CREATE);
-    }*/
+
 
 
 

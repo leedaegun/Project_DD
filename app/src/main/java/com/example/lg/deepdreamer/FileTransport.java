@@ -16,7 +16,7 @@ import java.net.URL;
 /**
  * Created by lg on 2018-08-13.
  */
-
+//파일전송 클래스(녹음 파일)
 public class FileTransport extends AsyncTask<String, Integer, Void> {
 
     FileInputStream fileInputStream = null;

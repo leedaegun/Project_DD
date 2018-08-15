@@ -6,6 +6,7 @@ import android.os.Handler;
  * Created by lg on 2018-08-13.
  */
 
+//자이로,녹음 서비스 스레드
 public class ServiceThread extends Thread {
     Handler handler;
     boolean isRun = true;

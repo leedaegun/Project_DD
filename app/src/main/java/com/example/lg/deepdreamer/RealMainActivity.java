@@ -1,7 +1,6 @@
 package com.example.lg.deepdreamer;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -11,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+//메인화면
 public class RealMainActivity extends AppCompatActivity {
     private BackPressCloseHandler backPressCloseHandler;//뒤로 두번 핸들러
 
@@ -20,13 +20,12 @@ public class RealMainActivity extends AppCompatActivity {
     private ImageButton tab_first,tab_second,tab_third;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_main);
 
-        Intent intent = new Intent(this.getIntent());
+        //Intent intent = new Intent(this.getIntent());
 
         vp = (ViewPager)findViewById(R.id.vp);
         vp.setOffscreenPageLimit(2);//페이지가 3개니까 미리 2개페이지 준비

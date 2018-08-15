@@ -27,6 +27,9 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
         */
+
+//설정 프래크먼트
+//로그아웃, 녹음 듣기 세부설정 이동
 public class Third_SettingFragment extends Fragment {
 
     private Button bt_Logout,bt_goto_detail_setting,bt_play;

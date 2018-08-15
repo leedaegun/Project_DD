@@ -27,6 +27,7 @@ import java.util.LinkedList;
  * Created by lg on 2018-08-03.
  */
 
+//일정 소음이상 자동 측정 녹음
 public class AutoVoiceReconizer {
     public static final int VOICE_READY = 1;
     public static final int VOICE_RECONIZING = 2;
@@ -248,7 +249,7 @@ public class AutoVoiceReconizer {
                     // 2000이 넘는 상태에서 cnt 를 증가시켜 10회 이상 지속되면 목소리가 나는 것으로 간주함
                     // voiceReconize 가 활성화 되면 시작 포인트
                     if( voiceReconize == false ){
-                        if( level > 1000 ){
+                        if( level > 2000 ){
                             if( cnt == 0 )
                                 startingIndex = recData.size();
                             cnt++;
@@ -275,7 +276,7 @@ public class AutoVoiceReconizer {
                             cnt++;
                         }
                         // 도중에 다시 소리가 커지는 경우 잠시 쉬었다가 계속 말하는 경우이므로 cnt 값은 0
-                        if( level > 1000 ){//1000으로 변경 08.05
+                        if( level > 2000 ){//1000으로 변경 08.05
                             cnt = 0;
                         }
                         // endIndex 를 저장하고 레벨체킹을 끝냄

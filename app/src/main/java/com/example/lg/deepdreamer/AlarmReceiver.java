@@ -46,8 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver
 
         }*/
         Toast.makeText(context, "Alarm Received!", Toast.LENGTH_LONG).show();
-        //Intent mServiceintent = new Intent(context,AlarmService.class);
-        //context.startService(mServiceintent);
+
 
         notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, RealMainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
