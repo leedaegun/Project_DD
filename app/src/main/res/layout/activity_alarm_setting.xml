@@ -104,41 +104,66 @@
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/switch3"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="다시 울림"
-            android:textColor="#3c5b54"
-            android:textSize="12sp"
-            android:track="@drawable/switch_track_selector"
-            android:thumb="@drawable/switch_thumb_selector"/>
-
-        <Switch
-            android:id="@+id/switch2"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="진동"
-            android:textColor="#3c5b54"
-            android:textSize="12sp"
-            android:track="@drawable/switch_track_selector"
-            android:thumb="@drawable/switch_thumb_selector"/>
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="알림음"
-            android:textColor="#3c5b54"
-            android:textSize="12sp"
-            android:track="@drawable/switch_track_selector"
-            android:thumb="@drawable/switch_thumb_selector"/>
-
-        <TextView
-            android:id="@+id/tv"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_repeat"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:layout_weight="2"
+                android:text="다시 울림" />
+
+            <Switch
+                android:id="@+id/sw_repeatAlarm"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:thumb="@drawable/switch_thumb_selector"
+                android:track="@drawable/switch_track_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Switch
+                android:id="@+id/sw_vibe"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="진동"
+                android:thumb="@drawable/switch_thumb_selector"
+                android:track="@drawable/switch_track_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Switch
+                android:id="@+id/sw_ring"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:text="알람 소리"
+                android:thumb="@drawable/switch_thumb_selector"
+                android:track="@drawable/switch_track_selector" />
+        </LinearLayout>
+
+
+
+
+
+
     </LinearLayout>
 
 </RelativeLayout>

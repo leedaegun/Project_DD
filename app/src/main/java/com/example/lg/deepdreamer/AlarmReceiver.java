@@ -1,5 +1,6 @@
 package com.example.lg.deepdreamer;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,6 +17,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -32,19 +35,23 @@ public class AlarmReceiver extends BroadcastReceiver
 
     PowerManager pm;
     PowerManager.WakeLock wl = null;
+
     @Override
     public void onReceive(Context context, Intent intent)
-    {/*
+    {
+        if(intent.getBooleanExtra("isVibe",false)) Log.i("바이브 true","");
+        else Log.i("바이브 false","");
+
         pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         if (!pm.isScreenOn()) { // 스크린이 켜져 있지 않으면 켠다
             wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "NabakAlarm");
             wl.acquire();
-            context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+            ((Activity)context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
 //										WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                     WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        }*/
+        }
         Toast.makeText(context, "Alarm Received!", Toast.LENGTH_LONG).show();
 
 
