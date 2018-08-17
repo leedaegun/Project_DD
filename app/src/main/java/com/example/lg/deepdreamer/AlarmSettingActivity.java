@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -35,15 +36,17 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     private AlarmManager mManager;
     // 설정 일시
     private Calendar mCalendar,currentCalendar;
-    //시작 설정 클래스
-    private TimePicker mTime;
-    private Button alarmDialog,repeatDialog;
     private int tmp_year,tmp_month,tmp_date;
     Date date  = new Date();
+    //시작 설정 클래스
+    private TimePicker mTime;
+    private Button alarmDialog,repeatDialog,selectRing;
+    private Switch repeatSwitch,vibeSwitch;
+
     private int selectedRepeatTime;//알람 주기
     private String selectedTime = null;//넘겨줄 알람주기
-    private Switch repeatSwitch,vibeSwitch;
-    Boolean isVibe;
+    private Boolean isVibe;//진동유무
+    public static final int REQUEST_CODE_RINGTONE = 10005;//벨소리 코드
     /*
      * 통지 관련 맴버 변수
      */
@@ -144,23 +147,31 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         }
         mTime.setOnTimeChangedListener(this);
 
-        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);//로그인정보담을 setting
+        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);//알람 설정 정보담을 setting
 
         repeatDialog = (Button)findViewById(R.id.bt_repeat);
-        if(setting.getString("repeatTime","")!=null){repeatDialog.setText(setting.getString("repeatTime",""));}
+        if(setting.getString("repeatTimeText","")!=null){repeatDialog.setText(setting.getString("repeatTimeText",""));}
+        selectedTime = setting.getString("repeatTime","0분");//설정한 반복값 설정
+        Log.i("Init selectedTime",selectedTime);
         repeatSwitch = (Switch)findViewById(R.id.sw_repeatAlarm);
         repeatSwitch.setChecked(setting.getBoolean("repeatTimeBoolean",false));
+        //초기 버튼 활성화 유무
+        if(repeatSwitch.isChecked())repeatDialog.setEnabled(true);
+        else repeatDialog.setEnabled(false);
+
         repeatDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final String[] repeatTime = new String[]{"5분","10분","15분","30분"};
-
+                int initIdx = setting.getInt("repeatTimeIdx",0);
+                Log.i("initIDx : ",Integer.toString(initIdx));
                 AlertDialog.Builder dialog = new AlertDialog.Builder(AlarmSettingActivity.this);
                 dialog.setTitle("간격")
-                        .setSingleChoiceItems(repeatTime, 0, new DialogInterface.OnClickListener() {
+                        .setSingleChoiceItems(repeatTime, initIdx, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //선택한 아이템
+
                                 selectedRepeatTime =i;
                             }
                         }).setNeutralButton("확인", new DialogInterface.OnClickListener() {
@@ -168,6 +179,11 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                         repeatDialog.setText("다시 울림("+repeatTime[selectedRepeatTime]+")");
+
+                        SharedPreferences.Editor editor = setting.edit();
+                        editor.putString("repeatTime",repeatTime[selectedRepeatTime]);//시간설정한 값 저장
+                        editor.commit();
+
                         selectedTime = repeatTime[selectedRepeatTime];
                         Log.i("selectedTime : ",selectedTime);
                     }
@@ -190,7 +206,8 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
             }
         });
         vibeSwitch = (Switch)findViewById(R.id.sw_vibe);
-        vibeSwitch.setChecked(setting.getBoolean("isVibe",false));
+        vibeSwitch.setChecked(setting.getBoolean("isVibe",false));//체크설정
+        isVibe = setting.getBoolean("isVibe",false);//리시버로 보낼 isVibe
         vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -202,6 +219,24 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                     //스위치 해제
                     isVibe=false;
                 }
+            }
+        });
+        selectRing = (Button)findViewById(R.id.bt_ring);
+        selectRing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER); // 암시적 Intent
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "알람 벨소리를  선택하세요");  // 제목을 넣는다.
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);  // 무음을 선택 리스트에서 제외
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true); // 기본 벨소리는 선택 리스트에 넣는다.
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,RingtoneManager.TYPE_ALARM);
+
+                startActivityForResult(intent, REQUEST_CODE_RINGTONE); // 벨소리 선택 창을 안드로이드OS에 요청
+
             }
         });
 
@@ -222,10 +257,15 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         else{
             mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());
             if(repeatSwitch.isChecked()){//반복 주기 설정 했을때
-                //라디오 버튼으로 직접 설정안하면 강종 무조건 설정해야됨 수정필요!!
-                int t = Integer.parseInt(selectedTime.substring(0,selectedTime.length()-1));//반복 주기
-                Log.i("자른거 : ",selectedTime.substring(0,selectedTime.length()-1));
-                Toast.makeText(AlarmSettingActivity.this,t+"분 반복 알람",Toast.LENGTH_LONG).show();
+                //라디오 버튼으로 직접 설정안하면 강종 무조건 설정해야됨 수정필요!!->수정ok
+                try {
+                    int t = Integer.parseInt(selectedTime.substring(0,selectedTime.length()-1));//반복 주기
+                    Log.i("자른거 : ",selectedTime.substring(0,selectedTime.length()-1));
+                    Toast.makeText(AlarmSettingActivity.this,t+"분 반복 알람",Toast.LENGTH_LONG).show();
+                }catch (NullPointerException e){
+                    Toast.makeText(AlarmSettingActivity.this,"반복알람 시간을 체크하세요",Toast.LENGTH_LONG).show();
+                }
+
                 //mManager.setRepeating(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), 1000*t,pendingIntent());//반복주기 설정
             }
 
@@ -281,7 +321,9 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     //알람의 설정 시각에 발생하는 인텐트 작성
     private PendingIntent pendingIntent() {
         Intent i = new Intent(AlarmSettingActivity.this,AlarmReceiver.class);
-        i.putExtra("isVibe",isVibe);
+        i.putExtra("isVibe",isVibe);//리시버에게 진동 설정 유무 정보 전송
+
+        Log.i("리시버 전송할 isVibe : ",Boolean.toString(isVibe));
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
         return pi;
     }
@@ -320,9 +362,10 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         SharedPreferences.Editor editor = setting.edit();
 
         // if autoLogin Checked, save values
-        editor.putString("repeatTime", repeatDialog.getText().toString());
-        editor.putBoolean("repeatTimeBoolean",repeatSwitch.isChecked());
-        editor.putBoolean("isVibe",vibeSwitch.isChecked());
+        editor.putString("repeatTimeText", repeatDialog.getText().toString());//버튼 텍스트값 저장
+        editor.putBoolean("repeatTimeBoolean",repeatSwitch.isChecked());//반복설정 스위치값저장
+        editor.putBoolean("isVibe",vibeSwitch.isChecked());//진동설정 스위치값 저장
+        editor.putInt("repeatTimeIdx",selectedRepeatTime);//라디오 인덱스값
 
         editor.commit();
     }

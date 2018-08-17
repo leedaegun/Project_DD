@@ -49,14 +49,20 @@
             android:name=".AlarmSettingActivity"
             android:label="Alarm" />
 
-        <receiver android:name=".AlarmReceiver"></receiver>
+        <receiver android:name=".AlarmReceiver" />
 
         <activity android:name=".DetailSettingActivity" />
 
         <service
             android:name=".GyroRecordService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+        <service
+            android:name=".AlarmService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".AlarmPopUpActivity"></activity>
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package com.example.lg.deepdreamer;
 
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,10 +14,9 @@ import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.PowerManager;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -33,25 +31,20 @@ public class AlarmReceiver extends BroadcastReceiver
     private NotificationManager notificationmanager = null;
     PendingIntent pendingIntent;
 
-    PowerManager pm;
-    PowerManager.WakeLock wl = null;
+
+
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if(intent.getBooleanExtra("isVibe",false)) Log.i("바이브 true","");
-        else Log.i("바이브 false","");
 
-        pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-        if (!pm.isScreenOn()) { // 스크린이 켜져 있지 않으면 켠다
-            wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "NabakAlarm");
-            wl.acquire();
-            ((Activity)context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-//										WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        WakeLockUtil.acquireCpuWakeLock(context);//cpu얻고
 
-        }
+        Bundle bundle = intent.getExtras();//알람 설정한 값 받기
+        boolean b = bundle.getBoolean("isVibe");
+        Log.i("리시버 전송 받은 isVibe : ",Boolean.toString(b));
+
+
         Toast.makeText(context, "Alarm Received!", Toast.LENGTH_LONG).show();
 
 
@@ -85,16 +78,21 @@ public class AlarmReceiver extends BroadcastReceiver
             //      mAudioManager.adjustStreamVolume(AudioManager.STREAM_RING,  AudioManager.ADJUST_RAISE, 0);
             //  }
         }
-        long[] vibrate = {0,100,200,300};//진동설정
-        builder.setVibrate(vibrate);
+        if(b){
+            long[] vibrate = {0,100,200,300};//진동설정
+            builder.setVibrate(vibrate);
+        }
+        else{
 
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//오레오 이상부터 알림 채널 설정필요
             notificationmanager.createNotificationChannel(new NotificationChannel("default","기본 채널",NotificationManager.IMPORTANCE_DEFAULT));
         }
         notificationmanager.notify(1, builder.build());
 
 
-
+        //Intent serviceIntent = new Intent(context,AlarmService.class);
+        //context.startService(serviceIntent);//알람 서비스 시작
 
 
 
@@ -103,3 +101,6 @@ public class AlarmReceiver extends BroadcastReceiver
 
 
 }
+/*
+
+*/
