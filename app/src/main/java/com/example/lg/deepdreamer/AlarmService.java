@@ -5,20 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 
 public class AlarmService extends Service {
-
+    //알람 서비스
     private MediaPlayer mMediaPlayer;   // MediaPlayer 변수 선언
     private Vibrator mVibrator;
     private static final long[] sVibratePattern = new long[] { 500, 500 };   // 진동 패턴 정의(0.5초 진동, 0.5초 쉼)
-    /*
-    * mVibrator =  (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-mVibrator.vibrate(sVibratePattern, 0);   // 진동 시작 (패턴으로 진동, '0':무한 반복, -1:반복 없음)
-mVibrator.cancel();   // 진동 중지*/
+    //진동 설정은 개발자가 직접 해야됨
     public AlarmService() {
     }
     @Override
@@ -28,6 +27,7 @@ mVibrator.cancel();   // 진동 중지*/
         super.onCreate();
 
         //Power on
+
         WakeLockUtil.acquireCpuWakeLock(this);
 
 
@@ -45,10 +45,40 @@ mVibrator.cancel();   // 진동 중지*/
             return START_NOT_STICKY;
 
         }
+        /*
+        startForeground(1,new Notification());
 
-        playMusic();    // 음악 및 진동 시작
+        //startForeground 를 사용하면 notification 을 보여주어야 하는데 없애기 위한 코드
 
-        return START_STICKY;
+        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        Notification notification;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+
+            notification = new Notification.Builder(getApplicationContext())
+                    .setContentTitle("")
+                    .setContentText("")
+                    .build();
+
+        }else{
+            notification = new Notification(0, "", System.currentTimeMillis());
+            notification.setLatestEventInfo(getApplicationContext(), "", "", null);
+        }
+
+        nm.notify(startId, notification);
+        nm.cancel(startId);*/
+        Uri ringring = intent.getParcelableExtra("ringUri");//사용자가 선택한 벨소리
+
+        if(intent.getBooleanExtra("isVibe",false)) playMusic(ringring);    // 음악 및 진동 시작
+        if(intent.getBooleanExtra("isRing",false)) vibrator();
+
+        Intent popUpIntent = new Intent(this,AlarmPopUpActivity.class);//알람 종료 화면
+        startActivity(popUpIntent);
+
+        Log.i("서비스에서 받은 ringUri : ",intent.getParcelableExtra("ringUri").toString());//
+        Log.i("서비스에서 받은 isVibe : ",Boolean.toString(intent.getBooleanExtra("isVibe",false)));
+
+        return  START_REDELIVER_INTENT;
 
     }
 
@@ -60,10 +90,10 @@ mVibrator.cancel();   // 진동 중지*/
 
         super.onDestroy();
 
-       stopMusic();   // 음악 및 진동 중지
-
+        stopMusic();   // 음악 및 진동 중지
+        stopVibrator();  // 진동 중지
         // Power off
-       WakeLockUtil.releaseCpuWakeLock();
+        WakeLockUtil.releaseCpuWakeLock();
 
     }
     @Override
@@ -71,19 +101,26 @@ mVibrator.cancel();   // 진동 중지*/
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    private void playMusic() {
+    private void vibrator(){
+
+        //진동 설정 했으면 진동진동
+        mVibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            //api 26 이상
+            mVibrator.vibrate(VibrationEffect.createWaveform(sVibratePattern,0));
+        } else {
+            //api 26 이하
+            mVibrator.vibrate(sVibratePattern,0);// 진동 시작 (패턴으로 진동, '0':무한 반복, -1:반복 없음)
+        }
+    }
+    private void playMusic(Uri uri) {
 
         stopMusic();  // 플레이 할 때 가장 먼저 음악 중지 실행
-
-        Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);  // 기본 벨소리(알람)의 URI
-
         mMediaPlayer = new MediaPlayer();  // 1. MediaPlayer 객체 생성
-
-
-
         try {
 
-            mMediaPlayer.setDataSource(this, alert);  // 2. 데이터 소스 설정 (인터넷에 있는 음악 파일도 가능함)
+            mMediaPlayer.setDataSource(this, uri);  // 2. 데이터 소스 설정 (인터넷에 있는 음악 파일도 가능함)
 
             startAlarm(mMediaPlayer);
 
@@ -141,29 +178,14 @@ mVibrator.cancel();   // 진동 중지*/
         }
 
     }
-    /*
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        switch(requestCode) {
-
-            case REQUEST_CODE_RINGTONE :
-
-                if(resultCode == RESULT_OK ) {
-
-                    // 선택한 Ringtone(벨소리)를 받아온다.
-
-                    Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-
-                    // 벨소리 이름 얻는 방법
-
-                    String ringToneName = RingtoneManager.getRingtone(this, uri).getTitle(this);
-
-                }
-
+    public  void stopVibrator(){
+        if(mVibrator!=null){
+            mVibrator.cancel();
         }
 
-    }*/
+    }
+
+
+
 
 }

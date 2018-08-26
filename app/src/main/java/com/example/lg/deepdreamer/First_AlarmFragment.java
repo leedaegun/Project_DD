@@ -96,7 +96,6 @@ public class First_AlarmFragment extends Fragment {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_first__alarm, container, false);
 
-        mService = new Intent(getActivity(),GyroRecordService.class);
         tv_roll = layout.findViewById(R.id.tv_roll);
         tv_pitch = layout.findViewById(R.id.tv_pitch);
 
@@ -167,6 +166,8 @@ public class First_AlarmFragment extends Fragment {
                 if (isService) {
                     isService = false;
                     bt_service.setText("서비스 시작");
+
+                    mService = new Intent(getActivity(),GyroRecordService.class);
                     getActivity().stopService(mService);
 
 
@@ -177,6 +178,8 @@ public class First_AlarmFragment extends Fragment {
                 else {
                     isService = true;
                     bt_service.setText("서비스 종료");
+
+                    mService = new Intent(getActivity(),GyroRecordService.class);
                     getActivity().startService(mService);
 
 
@@ -194,6 +197,7 @@ public class First_AlarmFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch( msg.what ){
                 case AutoVoiceReconizer.VOICE_READY:
+                    statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("준비...");
                     break;
                 case AutoVoiceReconizer.VOICE_RECONIZING:
@@ -210,7 +214,7 @@ public class First_AlarmFragment extends Fragment {
                     break;
 /*
                 case AutoVoiceReconizer.VOICE_PLAYING:
-                    statusTextView.setTextColor( Color.WHITE );
+                    statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("플레이중...");
                     break;
 */

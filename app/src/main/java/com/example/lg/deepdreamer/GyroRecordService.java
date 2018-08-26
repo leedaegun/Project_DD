@@ -1,7 +1,6 @@
 package com.example.lg.deepdreamer;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -185,23 +184,21 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
         public void handleMessage(Message msg) {
 
-            Intent intent = new Intent(GyroRecordService.this, RealMainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(GyroRecordService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            //Intent intent = new Intent(GyroRecordService.this, RealMainActivity.class);
+            //PendingIntent pendingIntent = PendingIntent.getActivity(GyroRecordService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());//빌더 선언
             builder.setSmallIcon(R.drawable.ic_action_name)
                     .setWhen(System.currentTimeMillis())
                     .setContentTitle("서비스")
                     .setContentText("서비스 동작 중 입니다.")
-                    //.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
-                    .setContentIntent(pendingIntent)
+                    //.setContentIntent(pendingIntent)
                     .setAutoCancel(true);
 
             Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher);
             builder.setLargeIcon(largeIcon);//큰 아이콘
             builder.setColor(Color.RED);//색깔
             notificationmanager.notify(1, builder.build());
-
 
 
 

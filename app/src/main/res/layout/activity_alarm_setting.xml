@@ -75,9 +75,11 @@
                 android:textColor="#3c5b54"
                 android:textSize="15dp"
                 android:textStyle="bold" />
+
         </LinearLayout>
 
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/alarm_ll_2"
@@ -94,13 +96,60 @@
             android:layout_height="match_parent"
             android:timePickerMode="spinner" />
 
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_select_Time"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alarm_ll_2"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <ToggleButton
+            android:id="@+id/tb_10min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="10분 On"
+            android:textOff="10분 Off"
+            android:text="10분" />
+
+        <ToggleButton
+            android:id="@+id/tb_30min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="30분 On"
+            android:textOff="30분 Off"
+            android:text="30분" />
+
+        <ToggleButton
+            android:id="@+id/tb_40min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="40분 On"
+            android:textOff="40분 Off"
+            android:text="40분" />
+
+        <ToggleButton
+            android:id="@+id/tb_1hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="1시간 On"
+            android:textOff="1시간 Off"
+            android:text="1시간" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/alarm_ll_3"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/alarm_ll_2"
+        android:layout_below="@id/ll_select_Time"
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 

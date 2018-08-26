@@ -36,19 +36,19 @@ public class AutoVoiceReconizer {
     public static final int VOICE_PLAYING = 5;
     public static final int FILE_PATH = 6;
 
-    RecordAudio recordTask;
-    PlayAudio playTask;
-    final int CUSTOM_FREQ_SOAP = 2;;
+    private RecordAudio recordTask;
+    private PlayAudio playTask;
+    private final int CUSTOM_FREQ_SOAP = 2;;
 
-    File recordingFile;
+    private File recordingFile;
 
-    boolean isRecording = false;
-    boolean isPlaying = false;
+    private boolean isRecording = false;
+    private boolean isPlaying = false;
 
-    int frequency = 11025;
-    int outfrequency = frequency*CUSTOM_FREQ_SOAP;
-    int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
-    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+    private int frequency = 11025;
+    private int outfrequency = frequency*CUSTOM_FREQ_SOAP;
+    private int channelConfiguration = AudioFormat.CHANNEL_IN_STEREO;//MONO에서 STERO로 바꾸니까됨
+    private int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private int bufferReadResult;
 
     private Handler handler;
@@ -57,9 +57,9 @@ public class AutoVoiceReconizer {
     //private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
 
 
-    LinkedList<short[]> recData = new LinkedList<short[]>();
+    private LinkedList<short[]> recData = new LinkedList<short[]>();
 
-    int level; // 볼륨레벨
+    private int level; // 볼륨레벨
     private int startingIndex = -1; // 녹음 시작 인덱스
     private int endIndex = -1;
     private int cnt = 0;// 카운터
@@ -84,7 +84,8 @@ public class AutoVoiceReconizer {
                         + "/DeepDreamer/");
         path.mkdirs();
         try {
-            recordingFile = File.createTempFile("recording", ".mp4", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
+            recordingFile = File.createTempFile("recording", ".mp3", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
+            Log.i("저장 경로 : ",recordingFile.toString());
 
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create file on SD card", e);
@@ -107,7 +108,7 @@ public class AutoVoiceReconizer {
         short[] buffer = null;
 
         isRecording = false;
-
+        //Log.i("stopLevelCheck 작동 하고있니?",  Boolean.toString(isPlaying));
         try {
             DataOutputStream dos = new DataOutputStream(
                     new BufferedOutputStream(new FileOutputStream(
@@ -131,7 +132,11 @@ public class AutoVoiceReconizer {
         Message msg1 = handler.obtainMessage(FILE_PATH,String.valueOf(recordingFile));
         handler.sendMessage( msg1 );
 
+        //Message msg = handler.obtainMessage( VOICE_PLAYING );
+        //handler.sendMessage( msg );
 
+        //playTask = new PlayAudio();
+        //playTask.execute();
 
     }
 
@@ -146,12 +151,16 @@ public class AutoVoiceReconizer {
         playTask = new PlayAudio();
         playTask.execute(inputFile);
     }
+    public void stopVoice(){
+        isPlaying=false;
+    }
 
     private class PlayAudio extends AsyncTask<File, Integer, Void> {
         @Override
-        protected Void doInBackground(File... params) {
+        protected Void doInBackground(File... params) {//Void ->File
             isPlaying = true;
-            Log.i("함수안 파일 경로",  params[0].toString());
+            //Log.i("함수안 파일 경로",  params[0].toString());
+            //Log.i("함수안 파일 경로",  Boolean.toString(isPlaying));
 
             int bufferSize = AudioTrack.getMinBufferSize(outfrequency,//1.5뺌
                     channelConfiguration, audioEncoding);
@@ -169,16 +178,16 @@ public class AutoVoiceReconizer {
                                 params[0])));//recordingFile -> 경로 입력값 변경
 
                 AudioTrack audioTrack = new AudioTrack(
-                        AudioManager.STREAM_MUSIC,  outfrequency ,//1.5곱한거 뺌
+                        AudioManager.STREAM_MUSIC,  (int)outfrequency ,//1.5곱한거 뺌
                         channelConfiguration, audioEncoding, bufferSize,
                         AudioTrack.MODE_STREAM);
-                /* 대체 함수
-                AudioTrack audioTrack = new AudioTrack(new AudioAttributes
-                        .Builder().setUsage()
-                        .setContentType()
+                //대체 함수
+                /*AudioTrack audioTrackl = new AudioTrack(new AudioAttributes
+                        .Builder().setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build(),
-                        audioEncoding, bufferSize,
-                        AudioTrack.MODE_STREAM);
+                        AudioFormat(audioEncoding), bufferSize,
+                        AudioTrack.MODE_STREAM,1);
                 ///////////////////// 약간 목소리가 변형되어 나옴.. * 1.5 를 빼면 원본 목소리가 나옴 /////
 				/*
 				AudioTrack audioTrack = new AudioTrack(
@@ -196,10 +205,13 @@ public class AutoVoiceReconizer {
                         i++;
                     }
                     audioTrack.write(audiodata, 0, audiodata.length);
+
                 }
 
                 dis.close();
 
+            } catch (Exception e){
+                Log.e("Exception"," ");
             } catch (Throwable t) {
                 Log.e("AudioTrack", "Playback Failed");
             }
@@ -243,13 +255,14 @@ public class AutoVoiceReconizer {
                     }
                     recData.add( buffer );
                     level = (int) ( total / bufferReadResult );
-
+                    //level 측정
+                    Log.i("level : ",Integer.toString(level));
                     // level 은 볼륨..
                     // level 값이 2000이 넘은 경우 목소리를 체크를 시작 ->1000으로 변경 08.05
                     // 2000이 넘는 상태에서 cnt 를 증가시켜 10회 이상 지속되면 목소리가 나는 것으로 간주함
                     // voiceReconize 가 활성화 되면 시작 포인트
-                    if( voiceReconize == false ){
-                        if( level > 2000 ){
+                    if( !voiceReconize ){
+                        if( level > 1000 ){
                             if( cnt == 0 )
                                 startingIndex = recData.size();
                             cnt++;
@@ -269,14 +282,14 @@ public class AutoVoiceReconizer {
                         }
                     }
 
-                    if( voiceReconize == true ){
+                    else{
                         // 목소리가 끝나고 500이하로 떨어진 상태가 40이상 지속된 경우
                         // 더이상 말하지 않는것으로 간주.. 레벨 체킹 끝냄
-                        if( level < 500 ){
+                        if( level < 1000 ){
                             cnt++;
                         }
                         // 도중에 다시 소리가 커지는 경우 잠시 쉬었다가 계속 말하는 경우이므로 cnt 값은 0
-                        if( level > 2000 ){//1000으로 변경 08.05
+                        if( level > 1000 ){//1000으로 변경 08.05
                             cnt = 0;
                         }
                         // endIndex 를 저장하고 레벨체킹을 끝냄
@@ -300,6 +313,7 @@ public class AutoVoiceReconizer {
         }
 
         protected void onPostExecute(Void result) {
+            Log.i("onPostExecute", "RecordTask");
         }
     }
 }

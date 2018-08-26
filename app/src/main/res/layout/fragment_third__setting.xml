@@ -48,23 +48,37 @@
         android:layout_below="@+id/linearLayout"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/bt_play"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="녹음듣기"
-            android:textColor="#5aeaca"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_play"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="녹음듣기"
+                android:textColor="#5aeaca"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/ib_stopVoice"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/lv_record"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_gravity="center_vertical"
+
             android:layout_weight="1"></ListView>
 
     </LinearLayout>

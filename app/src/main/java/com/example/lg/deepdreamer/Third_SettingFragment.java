@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -31,17 +32,17 @@ import java.util.List;
 //설정 프래크먼트
 //로그아웃, 녹음 듣기 세부설정 이동
 public class Third_SettingFragment extends Fragment {
-
-    private Button bt_Logout,bt_goto_detail_setting,bt_play;
-    ListView listView;
+    private final String path = Environment.getExternalStorageDirectory().getAbsolutePath() +"/DeepDreamer/";
+    private Button bt_Logout,bt_goto_detail_setting;
+    private ImageButton stopVoice;
+    private ListView listView;
     private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
-
     public Third_SettingFragment() {
         // Required empty public constructor
     }
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
     }
 
@@ -51,11 +52,9 @@ public class Third_SettingFragment extends Fragment {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_third__setting, container, false);
 
-        bt_Logout=layout.findViewById(R.id.bt_Logout);
+        autoVoiceRecorder = new AutoVoiceReconizer(handler );//재생클래스 선언
+
         bt_goto_detail_setting=layout.findViewById(R.id.bt_goto_detail_setting);
-        bt_play = layout.findViewById(R.id.bt_play);
-
-
         bt_goto_detail_setting.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -64,6 +63,8 @@ public class Third_SettingFragment extends Fragment {
             }
         });
 
+
+        bt_Logout=layout.findViewById(R.id.bt_Logout);
         bt_Logout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -85,43 +86,36 @@ public class Third_SettingFragment extends Fragment {
             }
         });
 
-        bt_play.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
 
-            }
-        });
+
 
         listView = layout.findViewById(R.id.lv_record);
-        //파일목록 로딩
-        final String path = Environment.getExternalStorageDirectory().getAbsolutePath() +"/DeepDreamer/";
-        File list = new File(path);
-        if(!list.isDirectory()){
-            if(!list.mkdirs()){}
-        }
-        File[] files = list.listFiles();
-        List<String> fileNameList = new ArrayList<>();
-        for(int i=0;i<files.length;i++){
-            fileNameList.add(files[i].getName());
-        }
-
-        autoVoiceRecorder = new AutoVoiceReconizer(handler );//재생클래스 선언
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,fileNameList);
-
-        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
 
-                // get TextView's Text.
-                //File playFile = (File) parent.getItemAtPosition(position) ;//클릭한거 파일화
                 String playFile = (String) parent.getItemAtPosition(position) ;
+
+
                 Toast.makeText(getActivity(),"파일 재생..", Toast.LENGTH_SHORT).show();
                 Log.i("클릭한 파일 이름",playFile);
+                //이걸로 안하면 재생이 안됨
+                //UI부분은 포기 해야될 듯
                 autoVoiceRecorder.playVoice(playFile);//파일재생
+
+
+
+
                 // TODO : use strText
             }
         }) ;
+        stopVoice = layout.findViewById(R.id.ib_stopVoice);
+        stopVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoVoiceRecorder.stopVoice();
+            }
+        });
 
 
 
@@ -144,6 +138,34 @@ public class Third_SettingFragment extends Fragment {
             }
         }
     };
+    private void updateVoiceList(){
+
+        File list = new File(path);
+        if(!list.isDirectory()){
+            if(!list.mkdirs()){}
+        }
+        File[] files = list.listFiles();
+        List<String> fileNameList = new ArrayList<>();
+        for(int i=0;i<files.length;i++){
+            fileNameList.add(files[i].getName());
+        }
+        final ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,fileNameList);
+        listView.setAdapter(adapter);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        //파일목록 로딩
+        updateVoiceList();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 
 
 }
+
+
