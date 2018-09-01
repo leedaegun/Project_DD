@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.util;
 
 import android.os.Handler;
 

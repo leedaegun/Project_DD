@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.DB;
 
 import android.content.ContentValues;
 import android.content.Context;

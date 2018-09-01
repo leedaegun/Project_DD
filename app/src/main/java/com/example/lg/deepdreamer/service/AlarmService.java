@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.service;
 
 import android.app.Service;
 import android.content.Context;
@@ -11,6 +11,9 @@ import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
+
+import com.example.lg.deepdreamer.util.WakeLockUtil;
+import com.example.lg.deepdreamer.activity.AlarmPopUpActivity;
 
 public class AlarmService extends Service {
     //알람 서비스
@@ -25,6 +28,7 @@ public class AlarmService extends Service {
     public void onCreate() {
 
         super.onCreate();
+
 
         //Power on
 

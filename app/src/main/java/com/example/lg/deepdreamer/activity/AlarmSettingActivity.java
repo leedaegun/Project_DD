@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.activity;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -24,6 +24,10 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.example.lg.deepdreamer.service.AlarmReceiver;
+import com.example.lg.deepdreamer.DB.DBHelper;
+import com.example.lg.deepdreamer.R;
 
 import java.io.File;
 import java.util.ArrayList;

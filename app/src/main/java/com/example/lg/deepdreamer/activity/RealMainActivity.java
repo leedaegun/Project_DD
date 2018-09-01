@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,6 +10,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.fragment.First_AlarmFragment;
+import com.example.lg.deepdreamer.fragment.MainFragment;
+import com.example.lg.deepdreamer.fragment.Second_MeasurementFragment;
+import com.example.lg.deepdreamer.fragment.Third_SettingFragment;
+
 //메인화면
 public class RealMainActivity extends AppCompatActivity {
     private BackPressCloseHandler backPressCloseHandler;//뒤로 두번 핸들러
@@ -17,7 +23,7 @@ public class RealMainActivity extends AppCompatActivity {
 
     private ViewPager vp;
     private LinearLayout ll;
-    private ImageButton tab_first,tab_second,tab_third;
+    private ImageButton tab_default,tab_first,tab_second,tab_third;
 
 
     @Override
@@ -28,22 +34,26 @@ public class RealMainActivity extends AppCompatActivity {
         //Intent intent = new Intent(this.getIntent());
 
         vp = (ViewPager)findViewById(R.id.vp);
-        vp.setOffscreenPageLimit(2);//페이지가 3개니까 미리 2개페이지 준비
+        vp.setOffscreenPageLimit(3);//페이지가 4개니까 미리 3개페이지 준비
         ll = (LinearLayout)findViewById(R.id.ll);
 
-        tab_first = (ImageButton) findViewById(R.id.tab_first);//첫번째 탭
-        tab_second = (ImageButton)findViewById(R.id.tab_second);//두번째 탭
-        tab_third = (ImageButton)findViewById(R.id.tab_third);//세번째 탭
+        tab_default = (ImageButton)findViewById(R.id.tab_default) ;//첫번째 탭
+        tab_first = (ImageButton) findViewById(R.id.tab_first);//두번째 탭
+        tab_second = (ImageButton)findViewById(R.id.tab_second);//세번째 탭
+        tab_third = (ImageButton)findViewById(R.id.tab_third);//네번째 탭
 
         vp.setAdapter(new pagerAdapter(getSupportFragmentManager()));
         vp.setCurrentItem(0);
 
+        tab_default.setOnClickListener(movePageListener);
+        tab_default.setTag(0);
         tab_first.setOnClickListener(movePageListener);
-        tab_first.setTag(0);
+        tab_first.setTag(1);
         tab_second.setOnClickListener(movePageListener);
-        tab_second.setTag(1);
+        tab_second.setTag(2);
         tab_third.setOnClickListener(movePageListener);
-        tab_third.setTag(2);
+        tab_third.setTag(3);
+
 
         tab_first.setSelected(true);
 
@@ -59,7 +69,7 @@ public class RealMainActivity extends AppCompatActivity {
             public void onPageSelected(int position)
             {
                 int i = 0;
-                while(i<3)
+                while(i<4)
                 {
                     if(position==i)
                     {
@@ -93,7 +103,7 @@ public class RealMainActivity extends AppCompatActivity {
             int tag = (int) v.getTag();
 
             int i = 0;
-            while(i<3)
+            while(i<4)
             {
                 if(tag==i)
                 {
@@ -123,10 +133,12 @@ public class RealMainActivity extends AppCompatActivity {
             switch(position)
             {
                 case 0:
-                    return new First_AlarmFragment();
+                    return new MainFragment();
                 case 1:
-                    return new Second_MeasurementFragment();
+                    return new First_AlarmFragment();
                 case 2:
+                    return new Second_MeasurementFragment();
+                case 3:
                     return new Third_SettingFragment();
                 default:
                     return null;
@@ -135,7 +147,7 @@ public class RealMainActivity extends AppCompatActivity {
         @Override
         public int getCount()
         {
-            return 3;
+            return 4;
         }
 
 

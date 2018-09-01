@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.activity;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -67,7 +67,7 @@ public class AutoVoiceReconizer {
     private boolean voiceReconize = false;
 
     public AutoVoiceReconizer( Handler handler ){
-        /*
+/*
         mCalendar = Calendar.getInstance();
 
         //파일 구분을 위한 파일이 저장된 날짜
@@ -85,6 +85,7 @@ public class AutoVoiceReconizer {
         path.mkdirs();
         try {
             recordingFile = File.createTempFile("recording", ".mp3", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+
+            //recordingFile = new File(path,""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+"record.mp4");
             Log.i("저장 경로 : ",recordingFile.toString());
 
         } catch (IOException e) {
@@ -128,6 +129,8 @@ public class AutoVoiceReconizer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 
         Message msg1 = handler.obtainMessage(FILE_PATH,String.valueOf(recordingFile));
         handler.sendMessage( msg1 );
@@ -295,7 +298,7 @@ public class AutoVoiceReconizer {
                         // endIndex 를 저장하고 레벨체킹을 끝냄
                         if( cnt > 40 ){
                             endIndex = recData.size();
-                            isRecording = false;
+                            //isRecording = false;
 
                             msg = handler.obtainMessage( VOICE_RECORDING_FINSHED );
                             handler.sendMessage( msg );

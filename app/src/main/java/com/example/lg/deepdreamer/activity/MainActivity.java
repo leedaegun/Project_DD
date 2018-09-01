@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,6 +24,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.server.ManagerServer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,14 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private BackPressCloseHandler backPressCloseHandler;
     private CheckBox auto_Login,save_ID;
-    boolean loginChecked;
-    boolean save_ID_chk;
-    boolean successLogin;
+    private boolean loginChecked;
+    private boolean save_ID_chk;
+    private boolean successLogin;
     public SharedPreferences setting;
-    //SharedPreferences.Editor editor;
-    final int MY_PERMISSION_REQUEST_STORAGE = 200;
+
+    private final int MY_PERMISSION_REQUEST_STORAGE = 200;
     private EditText et_Email,et_Pw;
     private String sEmail,sPw;
+    ManagerServer managerServer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("POST",param);
             try {
             /* 서버연결 */
-                URL url = new URL("http://192.168.0.89/login.php");
+                URL url = new URL(managerServer.getLoginIP());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setReadTimeout(15000);

@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +19,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
+import com.example.lg.deepdreamer.activity.DetailSettingActivity;
+import com.example.lg.deepdreamer.activity.MainActivity;
+import com.example.lg.deepdreamer.R;
 
 import java.io.File;
 import java.util.ArrayList;

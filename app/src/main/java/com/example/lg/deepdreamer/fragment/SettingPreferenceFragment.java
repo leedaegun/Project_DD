@@ -1,10 +1,12 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+
+import com.example.lg.deepdreamer.R;
 
 /**
  * Created by lg on 2018-07-06.

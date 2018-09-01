@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.util;
 
 import android.os.AsyncTask;
 import android.util.Log;

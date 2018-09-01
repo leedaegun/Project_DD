@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lg.deepdreamer.First_AlarmFragment">
+    tools:context="com.example.lg.deepdreamer.fragment.First_AlarmFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

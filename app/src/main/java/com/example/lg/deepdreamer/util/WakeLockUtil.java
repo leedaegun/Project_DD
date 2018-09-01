@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.util;
 
 import android.content.Context;
 import android.os.PowerManager;
@@ -12,7 +12,7 @@ public class WakeLockUtil {
     private  static PowerManager.WakeLock mCpuWakeLock;
     private  static  final String TAG = "DeepDreamerAlarm";
 
-    static void acquireCpuWakeLock(Context context){
+    public static void acquireCpuWakeLock(Context context){
 
         if(mCpuWakeLock!=null)return;
         if(!isScreenOn(context)){
@@ -23,7 +23,7 @@ public class WakeLockUtil {
                 PowerManager.ON_AFTER_RELEASE,TAG);//화면 켜짐
         mCpuWakeLock.acquire();}
     }
-    static void releaseCpuWakeLock(){
+    public static void releaseCpuWakeLock(){
         if(mCpuWakeLock!=null){
             mCpuWakeLock.release();
             mCpuWakeLock=null;

@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.fragment;
 
 
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,11 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
+import com.example.lg.deepdreamer.service.GyroRecordService;
+import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.activity.AlarmSettingActivity;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -42,12 +48,9 @@ public class First_AlarmFragment extends Fragment {
     private TextView tv_roll, tv_pitch;
     private Button bt_to_Alarm_Setting, bt_start,bt_service;
     String getAlarmTime=null;
-    //MediaPlayer mPlayer = null;
-    //녹음을 위한 변수
-    //MediaRecorder mRecorder = null;
-    //private String mPath,tmpPath = null;
-    boolean isRecording = false;
-    boolean isService = false;
+
+    private boolean isRecording = false;
+    private boolean isService = false;
     private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
     private TextView statusTextView;
 
@@ -243,46 +246,6 @@ public class First_AlarmFragment extends Fragment {
         }
     }
 
-    /*
-        void initAudioRecorder() {
-            if (mRecorder != null) { // recorder에 뭐가 들어있으면 초기화해줌
-                mRecorder.stop();
-                mRecorder.release();
-                mRecorder = null;
-            }
-
-            mRecorder = new MediaRecorder();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);//output file 에 audio track 이 포함되는과정
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);//이거 설정해제해보기 저장되나안되나
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);//
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new RecorderTask(mRecorder), 0, 500);
-
-            mCalendar = Calendar.getInstance();
-
-            //파일 구분을 위한 파일이 저장된 날짜
-            tmp_year=mCalendar.get(Calendar.YEAR);
-            tmp_month=mCalendar.get(Calendar.MONTH)+1;
-            tmp_date=mCalendar.get(Calendar.DATE);
-
-            tmp_hour = mCalendar.get(Calendar.HOUR);
-            tmp_mintue = mCalendar.get(Calendar.MINUTE);
-
-
-
-
-            mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+".record.mp4";
-            tmpPath = mPath;
-            Log.e("tmpPath " , tmpPath);
-            Log.d("file path is " , mPath);
-            mRecorder.setOutputFile(mPath);
-            try {
-                mRecorder.prepare();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    */
     @Override
     public void onResume() {
         super.onResume();/*
@@ -296,15 +259,8 @@ public class First_AlarmFragment extends Fragment {
         super.onPause();
         Log.e("LOG", "onPause()");
         mSensorManager.unregisterListener(mGyroLis);
-        /* if (mMusicPlayerService != null) {
-            if (!mMusicPlayerService.isPlaying()) {
-                // 음악이 정지 중일 경우는 서비스를 계속 실행할 필요가 없으므로 정지한다.
-                mMusicPlayerService.stopSelf();
-            }
-            unbindService(mMusicPlayerServiceConnection);
-            mMusicPlayerService = null;
-        }
-*/
+        deleteZeroFile();//0바이트 파일 삭제
+
     }
 
     @Override
@@ -385,6 +341,28 @@ public class First_AlarmFragment extends Fragment {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
         }
+    }
+    public void deleteZeroFile(){
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer";
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+
+        for(int i=0;i<files.length;i++){
+            if(files[i].length()==0){
+                Log.i("파일 사이즈", Long.toString(files[i].length()));
+                if(files[i].exists()){
+                    if(files[i].delete()){
+                        Log.i("파일삭제 성공","");
+                    }
+                    else{
+                        Log.i("파일삭제 실패","");
+                    }
+                }
+                else Log.i("file does not exist"," ");
+
+            }
+        }
+
     }
 
     public class fileTransport extends AsyncTask<String, Integer, Void> {

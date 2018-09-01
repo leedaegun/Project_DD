@@ -4,13 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lg.deepdreamer.RealMainActivity">
+    tools:context="com.example.lg.deepdreamer.activity.RealMainActivity">
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/tab_default"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            android:gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/home_btn" />
 
         <ImageButton
             android:id="@+id/tab_first"

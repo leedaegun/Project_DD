@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+
+import com.example.lg.deepdreamer.service.AlarmService;
+import com.example.lg.deepdreamer.R;
 
 public class AlarmPopUpActivity extends AppCompatActivity {
 

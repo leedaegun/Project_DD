@@ -1,13 +1,9 @@
-package com.example.lg.deepdreamer;
+package com.example.lg.deepdreamer.service;
 
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,9 +11,13 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.lg.deepdreamer.util.FileTransport;
+import com.example.lg.deepdreamer.util.ManagerNotification;
+import com.example.lg.deepdreamer.util.ServiceThread;
+import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
 
 //자이로 센서,녹음 측정 클래스
 public  class GyroRecordService extends Service implements SensorEventListener {
@@ -186,7 +186,7 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
             //Intent intent = new Intent(GyroRecordService.this, RealMainActivity.class);
             //PendingIntent pendingIntent = PendingIntent.getActivity(GyroRecordService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
-
+            /*
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());//빌더 선언
             builder.setSmallIcon(R.drawable.ic_action_name)
                     .setWhen(System.currentTimeMillis())
@@ -199,6 +199,8 @@ public  class GyroRecordService extends Service implements SensorEventListener {
             builder.setLargeIcon(largeIcon);//큰 아이콘
             builder.setColor(Color.RED);//색깔
             notificationmanager.notify(1, builder.build());
+            */
+            ManagerNotification.operatingService(getApplicationContext());
 
 
 
