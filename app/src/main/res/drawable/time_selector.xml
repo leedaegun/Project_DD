@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_checked="true"
+        android:drawable="@drawable/rectangle_3" />
+
+    <!--   눌린 후 버튼이미지 파일명을 써준다.-->
+
+    <!-- pressed -->
+
+
+
+    <item
+        android:state_checked="false"
+        android:drawable="@drawable/time_off_background"
+         />
+
+    <!--  눌리기 전 버튼이미지 파일명을 써준다..-->
+
+    <!-- default -->
+</selector>

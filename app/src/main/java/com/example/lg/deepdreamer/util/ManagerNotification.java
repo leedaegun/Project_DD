@@ -26,7 +26,7 @@ public class ManagerNotification {
     public static void alarmNotification(Context context) {
         Notification.Builder builder;
 
-        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, RealMainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
+        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
 
 
         NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -60,7 +60,7 @@ public class ManagerNotification {
     public static void operatingService(Context context) {
         Notification.Builder builder;
 
-        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, RealMainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
+        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
 
 
         NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -88,7 +88,8 @@ public class ManagerNotification {
         builder.setColor(Color.RED);//색깔
 
 
-        notificationmanager.notify(1, builder.build());}
+        notificationmanager.notify(1, builder.build());
+    }
 
 
 }

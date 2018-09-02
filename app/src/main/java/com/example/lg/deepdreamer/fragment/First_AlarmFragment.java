@@ -1,18 +1,9 @@
 package com.example.lg.deepdreamer.fragment;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,23 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
-import com.example.lg.deepdreamer.service.GyroRecordService;
 import com.example.lg.deepdreamer.R;
 import com.example.lg.deepdreamer.activity.AlarmSettingActivity;
+import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
+import com.example.lg.deepdreamer.service.GyroRecordService;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -45,19 +26,19 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  */
 public class First_AlarmFragment extends Fragment {
-    private TextView tv_roll, tv_pitch;
+    //private TextView tv_roll, tv_pitch;
     private Button bt_to_Alarm_Setting, bt_start,bt_service;
-    String getAlarmTime=null;
+    String getAlarmTime=null;//알람 설정 시간 맞추는 변수
 
-    private boolean isRecording = false;
+    //private boolean isRecording = false;
     private boolean isService = false;
     private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
-    private TextView statusTextView;
+    //private TextView statusTextView;
 
     //파일 저장 인덱스 -> 저장날짜 private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
 
     //Using the Accelometer & Gyroscoper 자이로센서 변수
-
+/*
     private SensorManager mSensorManager = null;
 
     //Using the Gyroscope
@@ -76,7 +57,7 @@ public class First_AlarmFragment extends Fragment {
     // for radian -> dgree
     private double RAD2DGR = 180 / Math.PI;
     private static final float NS2S = 1.0f/1000000000.0f;
-
+*/
     //서비스 변수
 
     Intent mService;
@@ -99,8 +80,8 @@ public class First_AlarmFragment extends Fragment {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_first__alarm, container, false);
 
-        tv_roll = layout.findViewById(R.id.tv_roll);
-        tv_pitch = layout.findViewById(R.id.tv_pitch);
+        //tv_roll = layout.findViewById(R.id.tv_roll);
+        //tv_pitch = layout.findViewById(R.id.tv_pitch);
 
         //알람설정버튼
         bt_to_Alarm_Setting = layout.findViewById(R.id.bt_to_Alarm_Setting);
@@ -113,7 +94,7 @@ public class First_AlarmFragment extends Fragment {
 
             }
         });
-
+/*
         //녹음 초기화
         autoVoiceRecorder = new AutoVoiceReconizer( handler );
         statusTextView = layout.findViewById( R.id.text_view_status );
@@ -130,7 +111,7 @@ public class First_AlarmFragment extends Fragment {
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* 실행 중일 때 -> 중지 */
+                // 실행 중일 때 -> 중지
                 if (isRecording) {
 
                     //mRecorder.stop();
@@ -145,7 +126,7 @@ public class First_AlarmFragment extends Fragment {
 
                 }
 
-                /* 실행 중이지 않을 때 -> 실행 */
+                // 실행 중이지 않을 때 -> 실행
                 else {
 
                     //initAudioRecorder();
@@ -161,7 +142,7 @@ public class First_AlarmFragment extends Fragment {
 
             }
         });
-
+*/
         bt_service=layout.findViewById(R.id.bt_service);
         bt_service.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,7 +177,7 @@ public class First_AlarmFragment extends Fragment {
 
         return layout;
     }
-    Handler handler = new Handler(){
+   /* Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             switch( msg.what ){
                 case AutoVoiceReconizer.VOICE_READY:
@@ -215,12 +196,12 @@ public class First_AlarmFragment extends Fragment {
                     statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("목소리 녹음 완료 재생 버튼을 누르세요...");
                     break;
-/*
+
                 case AutoVoiceReconizer.VOICE_PLAYING:
                     statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("플레이중...");
                     break;
-*/
+
                 case AutoVoiceReconizer.FILE_PATH:
                     statusTextView.setTextColor( Color.BLACK );
                     statusTextView.setText("서버전송중...");
@@ -231,7 +212,7 @@ public class First_AlarmFragment extends Fragment {
             }
         }
     };
-
+*/
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -258,7 +239,7 @@ public class First_AlarmFragment extends Fragment {
     public void onPause(){
         super.onPause();
         Log.e("LOG", "onPause()");
-        mSensorManager.unregisterListener(mGyroLis);
+        //mSensorManager.unregisterListener(mGyroLis);
         deleteZeroFile();//0바이트 파일 삭제
 
     }
@@ -268,7 +249,7 @@ public class First_AlarmFragment extends Fragment {
         super.onStop();
 
 
-        mSensorManager.unregisterListener(mGyroLis);
+        //mSensorManager.unregisterListener(mGyroLis);
 
     }
 
@@ -296,36 +277,36 @@ public class First_AlarmFragment extends Fragment {
        }
 
     }*/
-
+/*
     private class GyroscopeListener implements SensorEventListener {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
 
-            /* 각 축의 각속도 성분을 받는다. */
+            /* 각 축의 각속도 성분을 받는다.
             double gyroX = event.values[0];
             double gyroY = event.values[1];
             double gyroZ = event.values[2];
 
-            /* 각속도를 적분하여 회전각을 추출하기 위해 적분 간격(dt)을 구한다.
+             각속도를 적분하여 회전각을 추출하기 위해 적분 간격(dt)을 구한다.
              * dt : 센서가 현재 상태를 감지하는 시간 간격
-             * NS2S : nano second -> second */
+             * NS2S : nano second -> second
             dt = (event.timestamp - timestamp) * NS2S;
             timestamp = event.timestamp;
 
-            /* 맨 센서 인식을 활성화 하여 처음 timestamp가 0일때는 dt값이 올바르지 않으므로 넘어간다. */
+             맨 센서 인식을 활성화 하여 처음 timestamp가 0일때는 dt값이 올바르지 않으므로 넘어간다.
             if (dt - timestamp*NS2S != 0) {
 
                 /* 각속도 성분을 적분 -> 회전각(pitch, roll)으로 변환.
                  * 여기까지의 pitch, roll의 단위는 '라디안'이다.
-                 * SO 아래 로그 출력부분에서 멤버변수 'RAD2DGR'를 곱해주어 degree로 변환해줌.  */
+                 * SO 아래 로그 출력부분에서 멤버변수 'RAD2DGR'를 곱해주어 degree로 변환해줌.
                 pitch = pitch + gyroY*dt;
                 roll = roll + gyroX*dt;
                 yaw = yaw + gyroZ*dt;
 
                 tv_roll.setText("roll : "+roll);
                 tv_pitch.setText("pitch : "+pitch);
-/*
+
                 Log.e("LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
                         + "           [Y]:" + String.format("%.4f", event.values[1])
                         + "           [Z]:" + String.format("%.4f", event.values[2])
@@ -333,7 +314,7 @@ public class First_AlarmFragment extends Fragment {
                         + "           [Roll]: " + String.format("%.1f", roll*RAD2DGR)
                         + "           [Yaw]: " + String.format("%.1f", yaw*RAD2DGR)
                         + "           [dt]: " + String.format("%.4f", dt));
-*/
+
             }
         }
 
@@ -342,6 +323,7 @@ public class First_AlarmFragment extends Fragment {
 
         }
     }
+    */
     public void deleteZeroFile(){
         String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer";
         File dir = new File(path);
@@ -365,7 +347,9 @@ public class First_AlarmFragment extends Fragment {
 
     }
 
+    /*
     public class fileTransport extends AsyncTask<String, Integer, Void> {
+
 
         FileInputStream fileInputStream = null;
 
@@ -388,7 +372,7 @@ public class First_AlarmFragment extends Fragment {
                 e.printStackTrace();
             }
             try {
-            /* 서버연결 */
+             //서버연결
 
                 URL url = new URL("http://192.168.0.89/transport.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -405,7 +389,7 @@ public class First_AlarmFragment extends Fragment {
 
 
 
-                /* 안드로이드 -> 서버 파라메터값 전달 */
+                // 안드로이드 -> 서버 파라메터값 전달
                 DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
 
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
@@ -477,7 +461,7 @@ public class First_AlarmFragment extends Fragment {
 
         }
 
-    }
+    }*/
 
 
 

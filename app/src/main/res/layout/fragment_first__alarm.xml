@@ -20,56 +20,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/bt_service" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/bt_to_Alarm_Setting"
-        android:layout_marginTop="80dp"
-        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/bt_start"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/bt_to_Alarm_Setting"
-            android:layout_centerHorizontal="true"
-            android:onClick="onStart"
-            android:text="측정시작"
-            android:textColor="#000000"
-            android:textSize="20dp" />
 
-        <TextView
-            android:id="@+id/tv_roll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/bt_start"
-            android:layout_centerVertical="true"
-            android:text="roll"
-            android:textColor="#000000"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/tv_pitch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_roll"
-            android:text="pitch"
-            android:textColor="#000000"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/text_view_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_pitch"
-            android:layout_centerHorizontal="true"
-            android:text="TextView"
-            android:textColor="#000000"
-            android:textSize="20dp" />
-
-    </LinearLayout>
 
 
     <Button

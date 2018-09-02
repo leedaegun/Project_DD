@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
 import com.example.lg.deepdreamer.activity.DetailSettingActivity;
-import com.example.lg.deepdreamer.activity.MainActivity;
+import com.example.lg.deepdreamer.activity.LoginActivity;
 import com.example.lg.deepdreamer.R;
 
 import java.io.File;
@@ -77,7 +77,7 @@ public class Third_SettingFragment extends Fragment {
                         .setTitle("로그아웃").setMessage("로그아웃 하시겠습니까?")
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Intent i = new Intent(getActivity(), MainActivity.class);
+                                Intent i = new Intent(getActivity(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 startActivity(i);
                             }

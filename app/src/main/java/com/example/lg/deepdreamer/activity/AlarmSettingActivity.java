@@ -25,9 +25,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.lg.deepdreamer.service.AlarmReceiver;
 import com.example.lg.deepdreamer.DB.DBHelper;
 import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.service.AlarmReceiver;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,8 +59,6 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
     private int selectedRepeatTime;//알람 주기
     private String selectedTime = null;//넘겨줄 알람주기
-    private Boolean isVibe;//진동유무
-    private Boolean isRing;//벨소리유무
     private Uri tmpUri;//선택한 벨소리
 
     /*
@@ -80,7 +78,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         editor.putBoolean("isVibe", vibeSwitch.isChecked());//진동설정 스위치값 저장
         editor.putBoolean("isRing", ringSwitch.isChecked());//진동설정 스위치값 저장
         editor.putInt("repeatTimeIdx", selectedRepeatTime);//라디오 인덱스값
-
+        editor.putString("ringtoneUri",tmpUri.toString());//벨소리 uri
         editor.commit();
     }
 
@@ -246,16 +244,13 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         });
         vibeSwitch = (Switch) findViewById(R.id.sw_vibe);
         vibeSwitch.setChecked(setting.getBoolean("isVibe", false));//체크설정
-        isVibe = setting.getBoolean("isVibe", false);//리시버로 보낼 isVibe
         vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     //스위치 체크되어있을때
-                    isVibe = true;
                 } else {
                     //스위치 해제
-                    isVibe = false;
                 }
             }
         });
@@ -287,18 +282,15 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         //초기 버튼 활성화 유무
         if (ringSwitch.isChecked()) selectRing.setEnabled(true);
         else selectRing.setEnabled(false);
-        isRing = setting.getBoolean("isRing", false);//리시버로 보낼 isRing
         ringSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     //스위치 체크되어있을때
                     selectRing.setEnabled(true);
-                    isRing = true;
                 } else {
                     //스위치 해제
                     selectRing.setEnabled(false);
-                    isRing = false;
                 }
             }
         });
@@ -311,28 +303,21 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
             public void onClick(View v) {
                 switch (v.getId()){
                     case R.id.tb_10min :
-                        //Toast.makeText(AlarmSettingActivity.this,"10분",Toast.LENGTH_SHORT).show();
                         toggleButton30.setChecked(false);
                         toggleButton40.setChecked(false);
                         toggleButton60.setChecked(false);
                         break;
                     case R.id.tb_30min :
-                        //Toast.makeText(AlarmSettingActivity.this,"30분",Toast.LENGTH_SHORT).show();
-
                         toggleButton10.setChecked(false);
                         toggleButton40.setChecked(false);
                         toggleButton60.setChecked(false);
                         break;
                     case R.id.tb_40min :
-                        //Toast.makeText(AlarmSettingActivity.this,"40분",Toast.LENGTH_SHORT).show();
-
                         toggleButton30.setChecked(false);
                         toggleButton10.setChecked(false);
                         toggleButton60.setChecked(false);
                         break;
                     case R.id.tb_1hour :
-                        //Toast.makeText(AlarmSettingActivity.this,"60분",Toast.LENGTH_SHORT).show();
-
                         toggleButton30.setChecked(false);
                         toggleButton40.setChecked(false);
                         toggleButton10.setChecked(false);
@@ -358,14 +343,12 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         } else {
 
             if (repeatSwitch.isChecked()) {//반복 주기 설정 했을때
-                //라디오 버튼으로 직접 설정안하면 강종 무조건 설정해야됨 수정필요!!->수정ok
                 try {
                     int t = Integer.parseInt(selectedTime.substring(0, selectedTime.length() - 1));//반복 주기
                     Log.i("자른거 : ", selectedTime.substring(0, selectedTime.length() - 1));
-                    //밑에 놈이 이상함 자꾸 븅신같이 안됨
                     //mManager.setRepeating(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), 1000*60*t,pendingIntent());//반복주기 설정
                     mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());//알람 설정
-                    Toast.makeText(AlarmSettingActivity.this, t + "분 반복 알람", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AlarmSettingActivity.this, t + "분 반복 알람", Toast.LENGTH_LONG).show();
                 } catch (NullPointerException e) {
                     Toast.makeText(AlarmSettingActivity.this, "반복알람 시간을 체크하세요", Toast.LENGTH_LONG).show();
                 }
@@ -401,7 +384,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
             Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
 
 
-            Intent intent = new Intent(AlarmSettingActivity.this, RealMainActivity.class);
+            Intent intent = new Intent(AlarmSettingActivity.this, MainActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("alarmTime", String.format("%d 시 %d 분", mCalendar.get(mCalendar.HOUR), mCalendar.get(mCalendar.MINUTE)));
             intent.putExtras(bundle);
@@ -414,7 +397,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     //알람의 해제
     private void resetAlarm() {
         mManager.cancel(pendingIntent());
-        Intent intent = new Intent(AlarmSettingActivity.this, RealMainActivity.class);
+        Intent intent = new Intent(AlarmSettingActivity.this, MainActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("alarmTime", "알람 설정");//알람 해제 했을때 다시 알람 설정으로
         intent.putExtras(bundle);
@@ -427,13 +410,6 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     //알람의 설정 시각에 발생하는 인텐트 작성
     private PendingIntent pendingIntent() {
         Intent i = new Intent(AlarmSettingActivity.this, AlarmReceiver.class);
-        i.putExtra("isVibe", isVibe);//리시버에게 진동 설정 유무 정보 전송
-        i.putExtra("isRing", isRing);//리시버에게 벨소리 설정 유무,
-        i.putExtra("ringUri", tmpUri);//벨소리 정보 전송
-
-        Log.i("리시버 전송할 isVibe : ", Boolean.toString(isVibe));
-        Log.i("리시버 전송할 isRing : ", Boolean.toString(isRing));
-        Log.i("리시버 전송할 tmpUri : ", tmpUri.toString());//전송한애랑 받은 애가 다름
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
         return pi;
     }

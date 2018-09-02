@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lg.deepdreamer.activity.RealMainActivity">
+    tools:context="com.example.lg.deepdreamer.activity.MainActivity">
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/home_btn" />
+            android:src="@drawable/home_btn_selector" />
 
         <ImageButton
             android:id="@+id/tab_first"
@@ -29,7 +29,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/alarm" />
+            android:src="@drawable/alarm_btn_selector" />
 
         <ImageButton
             android:id="@+id/tab_second"
@@ -39,7 +39,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/statics" />
+            android:src="@drawable/statics_btn_off" />
 
         <ImageButton
             android:id="@+id/tab_third"
@@ -49,7 +49,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/ddsettingicon" />
+            android:src="@drawable/setting_btn_off" />
     </LinearLayout>
 
 

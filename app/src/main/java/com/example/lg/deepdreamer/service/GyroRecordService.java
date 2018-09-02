@@ -14,7 +14,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.lg.deepdreamer.util.FileTransport;
+import com.example.lg.deepdreamer.server.FileTransport;
 import com.example.lg.deepdreamer.util.ManagerNotification;
 import com.example.lg.deepdreamer.util.ServiceThread;
 import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
@@ -184,7 +184,7 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
         public void handleMessage(Message msg) {
 
-            //Intent intent = new Intent(GyroRecordService.this, RealMainActivity.class);
+            //Intent intent = new Intent(GyroRecordService.this, MainActivity.class);
             //PendingIntent pendingIntent = PendingIntent.getActivity(GyroRecordService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
             /*
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());//빌더 선언

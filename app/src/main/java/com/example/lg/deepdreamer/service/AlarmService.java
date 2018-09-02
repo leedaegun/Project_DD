@@ -1,19 +1,21 @@
 package com.example.lg.deepdreamer.service;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 
-import com.example.lg.deepdreamer.util.WakeLockUtil;
 import com.example.lg.deepdreamer.activity.AlarmPopUpActivity;
+import com.example.lg.deepdreamer.util.WakeLockUtil;
 
 public class AlarmService extends Service {
     //알람 서비스
@@ -21,6 +23,9 @@ public class AlarmService extends Service {
     private Vibrator mVibrator;
     private static final long[] sVibratePattern = new long[] { 500, 500 };   // 진동 패턴 정의(0.5초 진동, 0.5초 쉼)
     //진동 설정은 개발자가 직접 해야됨
+
+    public SharedPreferences setting;
+
     public AlarmService() {
     }
     @Override
@@ -33,6 +38,7 @@ public class AlarmService extends Service {
         //Power on
 
         WakeLockUtil.acquireCpuWakeLock(this);
+
 
 
     }
@@ -49,6 +55,9 @@ public class AlarmService extends Service {
             return START_NOT_STICKY;
 
         }
+        setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);
+
+
         /*
         startForeground(1,new Notification());
 
@@ -71,16 +80,20 @@ public class AlarmService extends Service {
 
         nm.notify(startId, notification);
         nm.cancel(startId);*/
-        Uri ringring = intent.getParcelableExtra("ringUri");//사용자가 선택한 벨소리
+        Uri ringring = Uri.parse(setting.getString("ringtoneUri", RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString()));
+                //intent.getParcelableExtra("ringUri");//사용자가 선택한 벨소리
 
-        if(intent.getBooleanExtra("isVibe",false)) playMusic(ringring);    // 음악 및 진동 시작
-        if(intent.getBooleanExtra("isRing",false)) vibrator();
+        //if(intent.getBooleanExtra("isVibe",false)) playMusic(ringring);    // 음악 및 진동 시작
+        //if(intent.getBooleanExtra("isRing",false)) vibrator();
+
+        if(setting.getBoolean("isRing",false)) playMusic(ringring);    // 음악 및 진동 시작
+        if(setting.getBoolean("isVibe",false)) vibrator();
 
         Intent popUpIntent = new Intent(this,AlarmPopUpActivity.class);//알람 종료 화면
         startActivity(popUpIntent);
 
-        Log.i("서비스에서 받은 ringUri : ",intent.getParcelableExtra("ringUri").toString());//
-        Log.i("서비스에서 받은 isVibe : ",Boolean.toString(intent.getBooleanExtra("isVibe",false)));
+        //Log.i("서비스에서 받은 ringUri : ",intent.getParcelableExtra("ringUri").toString());//
+        //Log.i("서비스에서 받은 isVibe : ",Boolean.toString(intent.getBooleanExtra("isVibe",false)));
 
         return  START_REDELIVER_INTENT;
 

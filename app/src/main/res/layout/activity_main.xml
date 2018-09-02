@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login"
-    tools:context="com.example.lg.deepdreamer.activity.MainActivity"
+    tools:context="com.example.lg.deepdreamer.activity.LoginActivity"
     android:weightSum="1"
     android:orientation="vertical">
 

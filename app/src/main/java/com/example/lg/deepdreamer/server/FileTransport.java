@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer.util;
+package com.example.lg.deepdreamer.server;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,7 +20,7 @@ import java.net.URL;
 public class FileTransport extends AsyncTask<String, Integer, Void> {
 
     FileInputStream fileInputStream = null;
-
+    ManagerServer managerServer;
 
     @Override
     protected Void doInBackground(String... params) {
@@ -42,7 +42,7 @@ public class FileTransport extends AsyncTask<String, Integer, Void> {
         try {
             /* 서버연결 */
 
-            URL url = new URL("http://192.168.0.89/transport.php");
+            URL url = new URL(managerServer.getTransportIP());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             // Allow Inputs
             conn.setDoInput(true);

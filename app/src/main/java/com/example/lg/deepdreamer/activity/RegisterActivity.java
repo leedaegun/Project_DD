@@ -1,9 +1,5 @@
 package com.example.lg.deepdreamer.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,32 +17,24 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.server.RegisterDB;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    EditText et_Name, et_Email,et_Pw, et_pw_chk;
-    String sName, sEmail,sPw, sPw_chk,birth,sex;
-    Spinner spinner;
-    Calendar mCalendar;
-    CheckBox cb_male,cb_female;
+    private EditText et_Name, et_Email,et_Pw, et_pw_chk;
+    private String sName, sEmail,sPw, sPw_chk,birth,sex;
+    private Spinner spinner;
+    private Calendar mCalendar;
+    private CheckBox cb_male,cb_female;
+    RegisterDB registerDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        Intent intent = new  Intent(this.getIntent());
 
         et_Name = (EditText) findViewById(R.id.et_Name);//이름
         et_Email=(EditText)findViewById(R.id.et_Email);//이메일
@@ -180,8 +168,11 @@ public class RegisterActivity extends AppCompatActivity {
         else{
             if(sPw.equals(sPw_chk)){
                 //pw 일치시
-                registDB rdb = new registDB();
-                rdb.execute();
+                String param = "u_id=" + sName + "&u_email=" + sEmail + "&u_pw=" + sPw  + "&u_birth=" + birth + "&u_sex=" + sex + "";
+                registerDB = new RegisterDB(this);
+                registerDB.execute(param);
+                //registDB rdb = new registDB();
+                //rdb.execute();
 
             }
             else{
@@ -191,6 +182,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
     }
+    /*
     public class registDB extends AsyncTask<Void, Integer, Void> {
         String data = "";
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(RegisterActivity.this);
@@ -198,11 +190,12 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... unused) {
 
-/* 인풋 파라메터값 생성 */
+// 인풋 파라메터값 생성
             String param = "u_id=" + sName + "&u_email=" + sEmail + "&u_pw=" + sPw  + "&u_birth=" + birth + "&u_sex=" + sex + "";
             try {
-/* 서버연결 */
-                URL url = new URL("http://192.168.0.89/register.php");
+// 서버연결
+
+                URL url = new URL(managerServer.getRegisterIP());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setReadTimeout(15000);
@@ -211,13 +204,13 @@ public class RegisterActivity extends AppCompatActivity {
                 conn.setDoInput(true);
                 conn.connect();
 
-/* 안드로이드 -> 서버 파라메터값 전달 */
+// 안드로이드 -> 서버 파라메터값 전달
                 OutputStream outs = conn.getOutputStream();
                 outs.write(param.getBytes("UTF-8"));
                 outs.flush();
                 outs.close();
 
-/* 서버 -> 안드로이드 파라메터값 전달 */
+// 서버 -> 안드로이드 파라메터값 전달
                 InputStream is = null;
                 BufferedReader in = null;
 
@@ -286,7 +279,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         }
 
-    }
+    }*/
 
 
 
