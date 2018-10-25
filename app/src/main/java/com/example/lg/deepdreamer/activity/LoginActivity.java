@@ -1,6 +1,7 @@
 package com.example.lg.deepdreamer.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
@@ -10,6 +11,7 @@ import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -17,22 +19,21 @@ import android.widget.Toast;
 
 import com.example.lg.deepdreamer.R;
 import com.example.lg.deepdreamer.server.LoginDB;
-import com.example.lg.deepdreamer.server.ManagerServer;
 
 //로그인 화면
 public class LoginActivity extends AppCompatActivity {
 
+    private InputMethodManager inputMethodManager;
     private BackPressCloseHandler backPressCloseHandler;
     private CheckBox auto_Login,save_ID;
+    private Button registerBtn;
     private boolean loginChecked;
     private boolean save_ID_chk;
-    private boolean successLogin;
     public SharedPreferences setting;
 
     //private final int MY_PERMISSION_REQUEST_STORAGE = 200;
     private EditText et_Email,et_Pw;
     private String sEmail,sPw;
-    ManagerServer managerServer;
     LoginDB loginDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
         //뒤로 두번 -> 종료
         backPressCloseHandler = new BackPressCloseHandler(this);
 
-        successLogin = false;
 
         et_Email = (EditText)findViewById(R.id.main_et_Email);//이메일 입력
         et_Pw = (EditText)findViewById(R.id.main_et_Pw);//패스워드 입력
@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         loginChecked = setting.getBoolean("autoLogin",false);//자동로그인 boolean변수
         save_ID_chk = setting.getBoolean("saveID",false);//아이디저장 boolean변수
 
+        inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if(loginChecked){
             //자동로그인 체크되어있으면 ID,PW저장
@@ -83,13 +84,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //회원가입 버튼
-        Button registerBtn = (Button)findViewById(R.id.registerBtn);
+        registerBtn = (Button)findViewById(R.id.registerBtn);
         registerBtn.setPaintFlags(registerBtn.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);//텍스트에 밑줄
         registerBtn.setOnClickListener(new View.OnClickListener(){
             @Override
 
             public void onClick(View v){
-                Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this,RegisterAuthActivity.class);
                 startActivity(intent);
 
             }
@@ -102,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
         sEmail = et_Email.getText().toString();
         sPw = et_Pw.getText().toString();
-
+        hideKeyboard();
         if(sEmail.length()<1){
             Toast.makeText(this,"아이디를 입력해주세요.",Toast.LENGTH_SHORT).show();
         }
@@ -299,6 +300,12 @@ public class LoginActivity extends AppCompatActivity {
         private void showGuide() {
             toast = Toast.makeText(activity, "\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT); toast.show(); }
     }
+    private void hideKeyboard()
+    {
+        inputMethodManager.hideSoftInputFromWindow(et_Email.getWindowToken(), 0);
+        inputMethodManager.hideSoftInputFromWindow(et_Pw.getWindowToken(), 0);
+    }
+
 /*
 
     //어플리케이션 권한 확인

@@ -1,4 +1,4 @@
-package com.example.lg.deepdreamer.activity;
+package com.example.lg.deepdreamer.util;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;

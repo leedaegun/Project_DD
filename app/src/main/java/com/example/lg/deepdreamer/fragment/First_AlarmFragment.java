@@ -1,6 +1,7 @@
 package com.example.lg.deepdreamer.fragment;
 
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,12 +15,13 @@ import android.widget.RelativeLayout;
 
 import com.example.lg.deepdreamer.R;
 import com.example.lg.deepdreamer.activity.AlarmSettingActivity;
-import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
 import com.example.lg.deepdreamer.service.GyroRecordService;
+import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
 
 import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 
 /**
@@ -153,6 +155,8 @@ public class First_AlarmFragment extends Fragment {
 
                     mService = new Intent(getActivity(),GyroRecordService.class);
                     getActivity().stopService(mService);
+                    NotificationManager notificationManager= (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.cancel(1);
 
 
 

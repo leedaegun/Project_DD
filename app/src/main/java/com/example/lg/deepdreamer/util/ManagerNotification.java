@@ -3,7 +3,9 @@ package com.example.lg.deepdreamer.util;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +13,7 @@ import android.graphics.Color;
 import android.os.Build;
 
 import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.activity.MainActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -20,6 +23,9 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class ManagerNotification {
 
+
+    private static final int serviceChennelID = 1;
+    private static final int serviceAlarmID = 2;
     private static final String channelId = "channel";
     private static final String channelName = "Channel Name";
 
@@ -54,13 +60,13 @@ public class ManagerNotification {
         builder.setColor(Color.RED);//색깔
 
 
-        notificationmanager.notify(1, builder.build());}
+        notificationmanager.notify(serviceAlarmID, builder.build());}
 
 
     public static void operatingService(Context context) {
         Notification.Builder builder;
 
-        //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
 
 
         NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -80,7 +86,7 @@ public class ManagerNotification {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle("서비스")
                 .setContentText("서비스 동작 중입니다.")
-                //.setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher);
@@ -88,7 +94,7 @@ public class ManagerNotification {
         builder.setColor(Color.RED);//색깔
 
 
-        notificationmanager.notify(1, builder.build());
+        notificationmanager.notify(serviceChennelID, builder.build());
     }
 
 

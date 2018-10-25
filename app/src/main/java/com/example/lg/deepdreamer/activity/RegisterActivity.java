@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -29,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
     private Calendar mCalendar;
     private CheckBox cb_male,cb_female;
+    private Button bt_cancel;
     RegisterDB registerDB;
 
     @Override
@@ -36,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        bt_cancel = (Button)findViewById(R.id.bt_cancel);//취소버튼
         et_Name = (EditText) findViewById(R.id.et_Name);//이름
         et_Email=(EditText)findViewById(R.id.et_Email);//이메일
         et_Pw = (EditText) findViewById(R.id.et_Pw);//패스워드
@@ -43,6 +46,14 @@ public class RegisterActivity extends AppCompatActivity {
         spinner = (Spinner)findViewById(R.id.spinner);//생년월일 스피너
         cb_female = (CheckBox)findViewById(R.id.cb_female);//여자 체크박스
         cb_male = (CheckBox)findViewById(R.id.cb_male);//남자 체크박스
+
+        bt_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         //패스워드 *표시
         et_Pw.setInputType(InputType.TYPE_CLASS_TEXT);
         PasswordTransformationMethod et_Pw_fm = new PasswordTransformationMethod();

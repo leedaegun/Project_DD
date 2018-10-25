@@ -17,16 +17,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by lg on 2018-09-02.
+ * Created by lg on 2018-09-23.
  */
 
-public class RegisterDB extends AsyncTask<String, Integer, Void> {
+public class RegisterAuth extends AsyncTask<String, Integer, Void> {
 
     private Context context;
     String data = "";
     ManagerServer managerServer;
 
-    public RegisterDB(Context context){
+    public RegisterAuth(Context context){
         this.context = context;
     }
     @Override
@@ -36,7 +36,7 @@ public class RegisterDB extends AsyncTask<String, Integer, Void> {
         try {
 /* 서버연결 */
             //인증이랑 등록 IP를 파라미터로 넣어 사용하기
-            URL url = new URL(managerServer.getRegisterIP());
+            URL url = new URL(managerServer.getRegisterAuthIP());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setReadTimeout(15000);

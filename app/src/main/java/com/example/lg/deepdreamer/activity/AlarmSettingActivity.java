@@ -294,10 +294,12 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                 }
             }
         });
+
         toggleButton10 = (ToggleButton)findViewById(R.id.tb_10min);
         toggleButton30 = (ToggleButton)findViewById(R.id.tb_30min);
         toggleButton40 = (ToggleButton)findViewById(R.id.tb_40min);
         toggleButton60 = (ToggleButton)findViewById(R.id.tb_1hour);
+
         ToggleButton.OnClickListener onClickListener = new ToggleButton.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -327,6 +329,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
             }
         };
+
         toggleButton10.setOnClickListener(onClickListener);
         toggleButton30.setOnClickListener(onClickListener);
         toggleButton40.setOnClickListener(onClickListener);

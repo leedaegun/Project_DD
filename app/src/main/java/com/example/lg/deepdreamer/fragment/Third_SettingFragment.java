@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
+import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
 import com.example.lg.deepdreamer.activity.DetailSettingActivity;
 import com.example.lg.deepdreamer.activity.LoginActivity;
 import com.example.lg.deepdreamer.R;

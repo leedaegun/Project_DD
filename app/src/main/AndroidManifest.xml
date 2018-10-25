@@ -63,7 +63,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".activity.AlarmPopUpActivity"></activity>
+        <activity android:name=".activity.AlarmPopUpActivity" />
+        <activity android:name=".activity.RegisterAuthActivity"></activity>
     </application>
 
 </manifest>

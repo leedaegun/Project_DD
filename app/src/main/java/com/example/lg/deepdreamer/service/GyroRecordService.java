@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -15,13 +16,22 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.lg.deepdreamer.server.FileTransport;
+import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
 import com.example.lg.deepdreamer.util.ManagerNotification;
 import com.example.lg.deepdreamer.util.ServiceThread;
-import com.example.lg.deepdreamer.activity.AutoVoiceReconizer;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 //자이로 센서,녹음 측정 클래스
-public  class GyroRecordService extends Service implements SensorEventListener {
+public  class GyroRecordService extends Service implements SensorEventListener{
 
+    final static String foldername = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer";
+    final static String filename = "logfile.txt";
+    private boolean isStop;
     //알림 매니저
     private NotificationManager notificationmanager = null;
     ServiceThread thread;
@@ -39,7 +49,13 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
     private Sensor mGgyroSensor = null;
 
+    private String transportData = "";
     //Roll and Pitch
+
+    double oldValue = 0;
+    double newValue = 1000;
+    double diff;
+
     private double pitch;
     private double roll;
     private double yaw;
@@ -61,6 +77,9 @@ public  class GyroRecordService extends Service implements SensorEventListener {
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         //Using the Accelometer
         mGgyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        Thread counter = new Thread(new Counter());
+        counter.start();
+
         super.onCreate();
     }
     @Override
@@ -80,8 +99,6 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
         if(mGgyroSensor != null)mSensorManager.registerListener(this, mGgyroSensor, SensorManager.SENSOR_DELAY_UI);
 
-
-
         Toast.makeText(this,"서비스 시작",Toast.LENGTH_SHORT).show();
 
         return Service.START_REDELIVER_INTENT;
@@ -90,6 +107,7 @@ public  class GyroRecordService extends Service implements SensorEventListener {
         //return Service.START_REDELIVER_INTENT;  STICKY와 같지만 서비스자체를 null로 초기화 하지 않고 그대로 유지하며 다시 시작
         //측정값을 계속 유지해야하니깐 START_REDELIVER_INTENT 이거 사용하면 좋을듯 단 Activity에서 호출 할때 value 값을 전달하고 싶으면 flag 사용
     }
+
     @Override
     public void onDestroy() {
         Log.e("LOG", "onDestroy()");
@@ -98,6 +116,8 @@ public  class GyroRecordService extends Service implements SensorEventListener {
         thread = null;//쓰레드 null값 넣어서 회수
         autoVoiceRecorder.stopLevelCheck();//녹음 측정시작
         if(mSensorManager !=null) mSensorManager.unregisterListener(this);
+        isStop = true;
+        WriteTextFile(foldername, filename, transportData);
         super.onDestroy();
     }
 
@@ -118,6 +138,7 @@ public  class GyroRecordService extends Service implements SensorEventListener {
              * dt : 센서가 현재 상태를 감지하는 시간 간격
              * NS2S : nano second -> second */
         dt = (event.timestamp - timestamp) * NS2S;
+        //dt = (event.timestamp - timestamp);
         timestamp = event.timestamp;
 
             /* 맨 센서 인식을 활성화 하여 처음 timestamp가 0일때는 dt값이 올바르지 않으므로 넘어간다. */
@@ -126,13 +147,20 @@ public  class GyroRecordService extends Service implements SensorEventListener {
                 /* 각속도 성분을 적분 -> 회전각(pitch, roll)으로 변환.
                  * 여기까지의 pitch, roll의 단위는 '라디안'이다.
                  * SO 아래 로그 출력부분에서 멤버변수 'RAD2DGR'를 곱해주어 degree로 변환해줌.  */
+
             pitch = pitch + gyroY*dt;
             roll = roll + gyroX*dt;
             yaw = yaw + gyroZ*dt;
 
+            oldValue = newValue;
+            newValue = Math.sqrt((roll*roll + pitch*pitch + yaw*yaw) / 3);
+            diff = Math.abs((newValue - oldValue) / oldValue);
+
+
+
             //tv_roll.setText("roll : "+roll);
             //tv_pitch.setText("pitch : "+pitch);
-
+/*
                 Log.e("LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
                         + "           [Y]:" + String.format("%.4f", event.values[1])
                         + "           [Z]:" + String.format("%.4f", event.values[2])
@@ -140,8 +168,9 @@ public  class GyroRecordService extends Service implements SensorEventListener {
                         + "           [Roll]: " + String.format("%.1f", roll*RAD2DGR)
                         + "           [Yaw]: " + String.format("%.1f", yaw*RAD2DGR)
                         + "           [dt]: " + String.format("%.4f", dt));
-
+*/
         }
+
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -184,22 +213,6 @@ public  class GyroRecordService extends Service implements SensorEventListener {
 
         public void handleMessage(Message msg) {
 
-            //Intent intent = new Intent(GyroRecordService.this, MainActivity.class);
-            //PendingIntent pendingIntent = PendingIntent.getActivity(GyroRecordService.this, 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
-            /*
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());//빌더 선언
-            builder.setSmallIcon(R.drawable.ic_action_name)
-                    .setWhen(System.currentTimeMillis())
-                    .setContentTitle("서비스")
-                    .setContentText("서비스 동작 중 입니다.")
-                    //.setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
-
-            Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher);
-            builder.setLargeIcon(largeIcon);//큰 아이콘
-            builder.setColor(Color.RED);//색깔
-            notificationmanager.notify(1, builder.build());
-            */
             ManagerNotification.operatingService(getApplicationContext());
 
 
@@ -207,5 +220,54 @@ public  class GyroRecordService extends Service implements SensorEventListener {
         };
 
     };
+
+    //텍스트내용을 경로의 텍스트 파일에 쓰기
+    public void WriteTextFile(String foldername, String filename, String contents){
+        try{
+            File dir = new File (foldername);
+            //디렉토리 폴더가 없으면 생성함
+            if(!dir.exists()){
+                dir.mkdir();
+            }
+            //파일 output stream 생성
+            FileOutputStream fos = new FileOutputStream(foldername+"/"+filename, true);
+            //파일쓰기
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+            writer.write(contents);
+            writer.flush();
+
+            writer.close();
+            fos.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private class Counter implements Runnable{
+        private Handler handler = new Handler();
+
+        @Override
+        public void run() {
+            while (!isStop){
+
+
+
+                handler.post(new Runnable() { @Override public void run() {
+                    transportData += Double.toString(diff*100f)+"\n";
+                    // Log로 Count 찍어보기
+                    Log.e("자이로", transportData+ ""); } });
+
+
+            try {
+                thread.sleep(1000);
+
+                //Log.e("자이로 : ",transportData);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
+        }
+        }
+    }
 
 }
