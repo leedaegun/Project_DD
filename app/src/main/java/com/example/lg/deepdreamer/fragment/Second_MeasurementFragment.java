@@ -45,7 +45,7 @@ public class Second_MeasurementFragment extends Fragment {
 
         TextView inner_tab_first = layout.findViewById(R.id.inner_tab_first);//첫번째 탭- 하루
         TextView inner_tab_second = layout.findViewById(R.id.inner_tab_second);//두번째 탭- 일주일
-        TextView inner_tab_third = layout.findViewById(R.id.inner_tab_third);//세번째 탭-한달
+        //TextView inner_tab_third = layout.findViewById(R.id.inner_tab_third);//세번째 탭-한달
 
         inner_vp.setAdapter(new pagerAdapter(getChildFragmentManager()));
         inner_vp.setCurrentItem(0);
@@ -54,8 +54,8 @@ public class Second_MeasurementFragment extends Fragment {
         inner_tab_first.setTag(0);
         inner_tab_second.setOnClickListener(movePageListener);
         inner_tab_second.setTag(1);
-        inner_tab_third.setOnClickListener(movePageListener);
-        inner_tab_third.setTag(2);
+        //inner_tab_third.setOnClickListener(movePageListener);
+        //inner_tab_third.setTag(2);
 
         inner_tab_first.setSelected(true);
 
@@ -71,7 +71,7 @@ public class Second_MeasurementFragment extends Fragment {
             public void onPageSelected(int position)
             {
                 int i = 0;
-                while(i<3)
+                while(i<2)
                 {
                     if(position==i)
                     {
@@ -106,7 +106,7 @@ public class Second_MeasurementFragment extends Fragment {
             int tag = (int) v.getTag();
 
             int i = 0;
-            while(i<3)
+            while(i<2)
             {
                 if(tag==i)
                 {
@@ -137,8 +137,8 @@ public class Second_MeasurementFragment extends Fragment {
                     return new Second_Measurement_firstFragment();
                 case 1:
                     return new Second_Measurement_secondFragment();
-                case 2:
-                    return new Second_Measurement_thirdFragment();
+                //case 2:
+                //    return new Second_Measurement_thirdFragment();
                 default:
                     return null;
             }
@@ -146,7 +146,7 @@ public class Second_MeasurementFragment extends Fragment {
         @Override
         public int getCount()
         {
-            return 3;
+            return 2;
         }
 
 

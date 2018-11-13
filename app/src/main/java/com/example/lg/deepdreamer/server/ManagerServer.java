@@ -5,11 +5,12 @@ package com.example.lg.deepdreamer.server;
  */
 
 public class ManagerServer {
+    //52.79.227.49
     private final String serverIP= "http://192.168.0.89/";
-    private static final String loginPHP = "http://192.168.0.9/login.php";
-    private static final String registerPHP = "http://192.168.0.9/register.php";
-    private static final String transportPHP = "http://192.168.0.9/transport.php";
-    private static final String registerAuthPHP = "http://192.168.0.9/registerAuth.php";
+    private static final String loginPHP = "http://52.79.227.49/login.php";
+    private static final String registerPHP = "http://52.79.227.49/register.php";
+    private static final String transportPHP = "http://52.79.227.49/transport.php";
+    private static final String registerAuthPHP = "http://52.79.227.49/registerAuth.php";
 
     public  String getServerIP(){
         return serverIP;

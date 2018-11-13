@@ -55,7 +55,7 @@ public class ManagerNotification {
                 //.setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher);
+        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo_shadow);
         builder.setLargeIcon(largeIcon);//큰 아이콘
         builder.setColor(Color.RED);//색깔
 
@@ -89,7 +89,7 @@ public class ManagerNotification {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher);
+        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo_shadow);
         builder.setLargeIcon(largeIcon);//큰 아이콘
         builder.setColor(Color.RED);//색깔
 

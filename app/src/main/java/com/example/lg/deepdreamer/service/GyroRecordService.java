@@ -25,12 +25,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 //자이로 센서,녹음 측정 클래스
 public  class GyroRecordService extends Service implements SensorEventListener{
 
-    final static String foldername = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer";
-    final static String filename = "logfile.txt";
+    final static String foldername = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer/gyroData";
+    private String filename = ".txt";
     private boolean isStop;
     //알림 매니저
     private NotificationManager notificationmanager = null;
@@ -117,7 +119,13 @@ public  class GyroRecordService extends Service implements SensorEventListener{
         autoVoiceRecorder.stopLevelCheck();//녹음 측정시작
         if(mSensorManager !=null) mSensorManager.unregisterListener(this);
         isStop = true;
-        WriteTextFile(foldername, filename, transportData);
+        //현재시간으로 파일명
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
+        String getTime = sdf.format(date);
+
+
+        WriteTextFile(foldername, getTime+filename, transportData);
         super.onDestroy();
     }
 

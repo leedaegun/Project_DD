@@ -9,6 +9,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,12 +32,14 @@ public class RegisterActivity extends AppCompatActivity {
     private Calendar mCalendar;
     private CheckBox cb_male,cb_female;
     private Button bt_cancel;
+    private InputMethodManager inputMethodManager;
     RegisterDB registerDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
 
         bt_cancel = (Button)findViewById(R.id.bt_cancel);//취소버튼
         et_Name = (EditText) findViewById(R.id.et_Name);//이름
@@ -47,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         cb_female = (CheckBox)findViewById(R.id.cb_female);//여자 체크박스
         cb_male = (CheckBox)findViewById(R.id.cb_male);//남자 체크박스
 
+        inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         bt_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,6 +196,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
 
+    }
+    public void focusOut(View v){
+        inputMethodManager.hideSoftInputFromWindow(et_pw_chk.getWindowToken(),0);
     }
     /*
     public class registDB extends AsyncTask<Void, Integer, Void> {

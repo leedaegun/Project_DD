@@ -99,69 +99,13 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_select_Time"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_below="@id/alarm_ll_2"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
 
-        <ToggleButton
-            android:id="@+id/tb_10min"
-            android:layout_width="60dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:background="@drawable/time_selector"
-            android:textSize="12sp"
-            android:textColor="@drawable/time_color_selector"
-            android:textOn="10분 내"
-            android:textOff="10분 내"
-            android:text="10분" />
-
-        <ToggleButton
-            android:id="@+id/tb_30min"
-            android:layout_width="60dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:background="@drawable/time_selector"
-            android:textSize="12sp"
-            android:textColor="@drawable/time_color_selector"
-            android:textOn="15분 내"
-            android:textOff="15분 내"
-            android:text="15분" />
-
-        <ToggleButton
-            android:id="@+id/tb_40min"
-            android:layout_width="60dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:background="@drawable/time_selector"
-            android:textSize="12sp"
-            android:textColor="@drawable/time_color_selector"
-            android:textOn="20분 내"
-            android:textOff="20분 내"
-            android:text="20분" />
-
-        <ToggleButton
-            android:id="@+id/tb_1hour"
-            android:layout_width="60dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:background="@drawable/time_selector"
-            android:textSize="12sp"
-            android:textColor="@drawable/time_color_selector"
-            android:textOn="30분 내"
-            android:textOff="30분 내"
-            android:text="30분" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/alarm_ll_3"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ll_select_Time"
+        android:layout_below="@id/alarm_ll_2"
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 

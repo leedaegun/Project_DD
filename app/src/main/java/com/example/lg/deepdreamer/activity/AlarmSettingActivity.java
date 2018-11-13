@@ -23,7 +23,6 @@ import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.lg.deepdreamer.DB.DBHelper;
 import com.example.lg.deepdreamer.R;
@@ -53,8 +52,8 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
     //시작 설정 클래스
     private TimePicker mTime;
     //예측시간
-    private ToggleButton toggleButton10,toggleButton30,toggleButton40,toggleButton60;
-    private Button alarmDialog, repeatDialog, selectRing;
+    //private ToggleButton toggleButton10,toggleButton30,toggleButton40,toggleButton60;
+    private Button alarmDialog, repeatDialog, selectRing,vibeBtn;
     private Switch repeatSwitch, vibeSwitch, ringSwitch;
 
     private int selectedRepeatTime;//알람 주기
@@ -115,7 +114,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
 
                 setAlarm();
                 dbHelper.insert(mCalendar.get(mCalendar.MONTH) + 1, mCalendar.get(mCalendar.HOUR_OF_DAY), mCalendar.get(mCalendar.MINUTE));//addAlarm(int on, int day, int hour, int min, int vib, String ring)
-                //tv.setText(dbHelper.getResult());
+
                 Log.i("년 : ", Integer.toString(mCalendar.get(mCalendar.YEAR)));
                 Log.i("달 : ", Integer.toString(mCalendar.get(mCalendar.MONTH)));
                 Log.i("분 : ", Integer.toString(mCalendar.get(mCalendar.MINUTE)));
@@ -242,6 +241,9 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                 }
             }
         });
+        //초기 버튼 활성화 유무
+        if (vibeSwitch.isChecked()) vibeBtn.setEnabled(true);
+        else vibeBtn.setEnabled(false);
         vibeSwitch = (Switch) findViewById(R.id.sw_vibe);
         vibeSwitch.setChecked(setting.getBoolean("isVibe", false));//체크설정
         vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -294,7 +296,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                 }
             }
         });
-
+/*
         toggleButton10 = (ToggleButton)findViewById(R.id.tb_10min);
         toggleButton30 = (ToggleButton)findViewById(R.id.tb_30min);
         toggleButton40 = (ToggleButton)findViewById(R.id.tb_40min);
@@ -335,7 +337,7 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
         toggleButton40.setOnClickListener(onClickListener);
         toggleButton60.setOnClickListener(onClickListener);
 
-
+*/
     }
 
     //알람의 설정

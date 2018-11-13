@@ -18,6 +18,8 @@ import com.example.lg.deepdreamer.fragment.Third_SettingFragment;
 
 //메인화면
 public class MainActivity extends AppCompatActivity {
+
+
     private BackPressCloseHandler backPressCloseHandler;//뒤로 두번 핸들러
 
 

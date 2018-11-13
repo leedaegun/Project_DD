@@ -37,7 +37,7 @@ import java.util.List;
 //설정 프래크먼트
 //로그아웃, 녹음 듣기 세부설정 이동
 public class Third_SettingFragment extends Fragment {
-    private final String path = Environment.getExternalStorageDirectory().getAbsolutePath() +"/DeepDreamer/";
+    private final String path = Environment.getExternalStorageDirectory().getAbsolutePath() +"/DeepDreamer/soundData/";
     private Button bt_Logout,bt_goto_detail_setting;
     private ImageButton stopVoice;
     private ListView listView;

@@ -2,10 +2,13 @@ package com.example.lg.deepdreamer.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -23,12 +26,12 @@ import com.example.lg.deepdreamer.server.LoginDB;
 //로그인 화면
 public class LoginActivity extends AppCompatActivity {
 
-    private InputMethodManager inputMethodManager;
     private BackPressCloseHandler backPressCloseHandler;
     private CheckBox auto_Login,save_ID;
     private Button registerBtn;
     private boolean loginChecked;
     private boolean save_ID_chk;
+    private InputMethodManager inputMethodManager;
     public SharedPreferences setting;
 
     //private final int MY_PERMISSION_REQUEST_STORAGE = 200;
@@ -42,9 +45,12 @@ public class LoginActivity extends AppCompatActivity {
 
         //권한체크
         //checkPermission();
-
+        //inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         //뒤로 두번 -> 종료
         backPressCloseHandler = new BackPressCloseHandler(this);
+        //if(NetworkConnection() == false){//네트워크 상태확인
+          //  NotConnected_showAlert();
+        //}
 
 
         et_Email = (EditText)findViewById(R.id.main_et_Email);//이메일 입력
@@ -56,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         loginChecked = setting.getBoolean("autoLogin",false);//자동로그인 boolean변수
         save_ID_chk = setting.getBoolean("saveID",false);//아이디저장 boolean변수
 
-        inputMethodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
 
         if(loginChecked){
             //자동로그인 체크되어있으면 ID,PW저장
@@ -90,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
 
             public void onClick(View v){
-                Intent intent = new Intent(LoginActivity.this,RegisterAuthActivity.class);
+                Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);//Auth 생략
                 startActivity(intent);
 
             }
@@ -103,7 +109,6 @@ public class LoginActivity extends AppCompatActivity {
 
         sEmail = et_Email.getText().toString();
         sPw = et_Pw.getText().toString();
-        hideKeyboard();
         if(sEmail.length()<1){
             Toast.makeText(this,"아이디를 입력해주세요.",Toast.LENGTH_SHORT).show();
         }
@@ -117,11 +122,35 @@ public class LoginActivity extends AppCompatActivity {
             //lDB.execute();
             loginDB = new LoginDB(this);
             loginDB.execute(param);
+
+/*
+            try {
+                String suc = "1";
+                String test = loginDB.execute(param).get();
+                Log.e("login 받은거:",test);
+                if(suc.equalsIgnoreCase(test)) {
+                    Toast.makeText(this, "login 성공", Toast.LENGTH_SHORT).show();
+                    Log.e("if문 안login 받은거:", test);
+                }
+                else if(test.equals("notfind")){
+                    Log.e("찾을 수 없습니다.", test);
+                }
+                else{
+                    Toast.makeText(this, "login error", Toast.LENGTH_SHORT).show();
+                    Log.e("error", test);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }*/
+
         }
 
 
 
     }
+
 
     @Override
     protected void onStop() {
@@ -165,117 +194,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
-/*
-    private class loginDB extends AsyncTask<Void, Integer, Void> {
-        String data = "";
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(LoginActivity.this);
-        @Override
-        protected Void doInBackground(Void... unused) {
 
-            /* 인풋 파라메터값 생성
-            String param = "u_email=" + sEmail + "&u_pw=" + sPw + "";
-
-            Log.e("POST",param);
-            try {
-            /* 서버연결
-                URL url = new URL(managerServer.getLoginIP());
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setReadTimeout(15000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.connect();
-
-                /* 안드로이드 -> 서버 파라메터값 전달
-                OutputStream outs = conn.getOutputStream();
-                outs.write(param.getBytes("UTF-8"));
-                outs.flush();
-                outs.close();
-
-                /* 서버 -> 안드로이드 파라메터값 전달
-                InputStream is = null;
-                BufferedReader in = null;
-
-
-                is = conn.getInputStream();
-                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
-                String line = null;
-                StringBuffer buff = new StringBuffer();
-                while ( ( line = in.readLine() ) != null )
-                {
-                    buff.append(line + "\n");
-                }
-                data = buff.toString().trim();
-
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-
-
-            if(data.equals("1"))
-            {
-                Log.e("RESULT","로그인 성공!");
-
-                setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor editor = setting.edit();
-
-                editor.putString("success_ID",sEmail);
-                editor.putString("success_PW",sPw);
-
-                editor.commit();
-
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-            else if(data.equals("0"))
-            {
-                Log.e("RESULT","비밀번호가 일치하지 않습니다.");
-                alertBuilder
-                        .setTitle("알림")
-                        .setMessage("비밀번호가 일치하지 않습니다.")
-                        .setCancelable(true)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        });
-                AlertDialog dialog = alertBuilder.create();
-                dialog.show();
-            }
-            else
-            {
-                Log.e("RESULT","에러 발생! ERRCODE = " + data);
-                alertBuilder
-                        .setTitle("알림")
-                        .setMessage("로그인 중 에러가 발생했습니다! errcode : "+ data)
-                        .setCancelable(true)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        });
-                AlertDialog dialog = alertBuilder.create();
-                dialog.show();
-            }
-        }
-
-    }
-*/
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
@@ -300,10 +219,39 @@ public class LoginActivity extends AppCompatActivity {
         private void showGuide() {
             toast = Toast.makeText(activity, "\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT); toast.show(); }
     }
-    private void hideKeyboard()
+    public void loginFocusOut(View v)
     {
-        inputMethodManager.hideSoftInputFromWindow(et_Email.getWindowToken(), 0);
+        //inputMethodManager.hideSoftInputFromWindow(et_Email.getWindowToken(), 0);
         inputMethodManager.hideSoftInputFromWindow(et_Pw.getWindowToken(), 0);
+    }
+    private void NotConnected_showAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("네트워크 연결 오류");
+        builder.setMessage("사용 가능한 무선네트워크가 없습니다.\n" + "먼저 무선네트워크 연결상태를 확인해 주세요.")
+                .setCancelable(false)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish(); // exit
+                        //application 프로세스를 강제 종료
+                        android.os.Process.killProcess(android.os.Process.myPid() );
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+    private boolean NetworkConnection() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
+        boolean isMobileAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isAvailable();
+        boolean isMobileConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+        boolean isWifiAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isAvailable();
+        boolean isWifiConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+
+        if ((isWifiAvailable && isWifiConnect) || (isMobileAvailable && isMobileConnect)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 /*

@@ -1,65 +1,83 @@
 package com.example.lg.deepdreamer.fragment;
 
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.lg.deepdreamer.R;
-import com.example.lg.deepdreamer.activity.AlarmSettingActivity;
+import com.example.lg.deepdreamer.service.AlarmReceiver;
 import com.example.lg.deepdreamer.service.GyroRecordService;
-import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.example.lg.deepdreamer.R.id.set;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class First_AlarmFragment extends Fragment {
-    //private TextView tv_roll, tv_pitch;
-    private Button bt_to_Alarm_Setting, bt_start,bt_service;
-    String getAlarmTime=null;//알람 설정 시간 맞추는 변수
+public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeChangedListener {
+
+    static final String SERVICE_STATE ="SERVICE_STATE";
+    private ImageButton bt_service;
+/////////////////////알람세팅 Act 변수
+    public static final int REQUEST_CODE_RINGTONE = 10005;//벨소리 코드
+
+
+    public SharedPreferences setting;
+
+    // 알람 메니저
+    private AlarmManager mManager;
+    // 설정 일시
+    private Calendar mCalendar, currentCalendar;
+    private int tmp_year, tmp_month, tmp_date;
+    Date date = new Date();
+    //시작 설정 클래스
+    private TimePicker mTime;
+    //예측시간
+    //private ToggleButton toggleButton10,toggleButton30,toggleButton40,toggleButton60;
+    private Button alarmDialog, repeatDialog, selectRing,vibeBtn;
+    private Switch repeatSwitch, vibeSwitch, ringSwitch;
+
+    private int selectedRepeatTime;//알람 주기
+    private String selectedTime = null;//넘겨줄 알람주기
+    private Uri tmpUri;//선택한 벨소리
+
 
     //private boolean isRecording = false;
     private boolean isService = false;
-    private AutoVoiceReconizer autoVoiceRecorder;//녹음 클래스 선언
-    //private TextView statusTextView;
 
-    //파일 저장 인덱스 -> 저장날짜 private  int tmp_year,tmp_month,tmp_date,tmp_hour,tmp_mintue;
-
-    //Using the Accelometer & Gyroscoper 자이로센서 변수
-/*
-    private SensorManager mSensorManager = null;
-
-    //Using the Gyroscope
-    private SensorEventListener mGyroLis;
-    private Sensor mGgyroSensor = null;
-
-    //Roll and Pitch
-    private double pitch;
-    private double roll;
-    private double yaw;
-
-    //timestamp and dt
-    private double timestamp;
-    private double dt;
-
-    // for radian -> dgree
-    private double RAD2DGR = 180 / Math.PI;
-    private static final float NS2S = 1.0f/1000000000.0f;
-*/
     //서비스 변수
 
     Intent mService;
@@ -67,13 +85,16 @@ public class First_AlarmFragment extends Fragment {
     public First_AlarmFragment() {
         // Required empty public constructor
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            isService = savedInstanceState.getBoolean(SERVICE_STATE);
+        }
+
 
     }
-
 
 
     @Override
@@ -81,83 +102,260 @@ public class First_AlarmFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_first__alarm, container, false);
+        //알람 매니저를 취득
+        mManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        //현재 시각을 취득
+        mCalendar = Calendar.getInstance();
+        currentCalendar = Calendar.getInstance();
 
-        //tv_roll = layout.findViewById(R.id.tv_roll);
-        //tv_pitch = layout.findViewById(R.id.tv_pitch);
+        mCalendar.setTime(date);
+        tmp_date = mCalendar.get(Calendar.DATE);
+        tmp_month = mCalendar.get(Calendar.MONTH);
+        tmp_year = mCalendar.get(Calendar.YEAR);
 
-        //알람설정버튼
-        bt_to_Alarm_Setting = layout.findViewById(R.id.bt_to_Alarm_Setting);
-        bt_to_Alarm_Setting.setOnClickListener(new View.OnClickListener() {
-            @Override
+        Button b = layout.findViewById(set);
+        b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AlarmSettingActivity.class);
-                startActivityForResult(intent,101);
 
+                setAlarm();
+                //dbHelper.insert(mCalendar.get(mCalendar.MONTH) + 1, mCalendar.get(mCalendar.HOUR_OF_DAY), mCalendar.get(mCalendar.MINUTE));//addAlarm(int on, int day, int hour, int min, int vib, String ring)
+
+                Log.i("년 : ", Integer.toString(mCalendar.get(mCalendar.YEAR)));
+                Log.i("달 : ", Integer.toString(mCalendar.get(mCalendar.MONTH)));
+                Log.i("분 : ", Integer.toString(mCalendar.get(mCalendar.MINUTE)));
+                //Log.i("result : ", dbHelper.getResult());
 
             }
         });
-/*
-        //녹음 초기화
-        autoVoiceRecorder = new AutoVoiceReconizer( handler );
-        statusTextView = layout.findViewById( R.id.text_view_status );
-        statusTextView.setText("준비..");
-
-        //자이로 센서 초기화 Using the Gyroscope & Accelometer
-        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        //Using the Accelometer
-        mGgyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        mGyroLis = new GyroscopeListener();
-
-        //측정시작버튼
-        bt_start = layout.findViewById(R.id.bt_start);
-        bt_start.setOnClickListener(new View.OnClickListener() {
-            @Override
+        //취소버튼
+        b = layout.findViewById(R.id.reset);
+        b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // 실행 중일 때 -> 중지
-                if (isRecording) {
+                Toast.makeText(getActivity(), "알람이 해제되었습니다.", Toast.LENGTH_LONG).show();
+                resetAlarm();
+                //dbHelper.allDelete();
+            }
+        });
+        //DATE PICKER DIALOG
 
-                    //mRecorder.stop();
-                    autoVoiceRecorder.stopLevelCheck();//녹음 종료
-                    mSensorManager.unregisterListener(mGyroLis);//자이로 측정종료
-                    //fileTransport ft = new fileTransport(); //녹음 종료와 동시에 서버로 파일전송
-                    //ft.execute(tmpPath);
+        alarmDialog = layout.findViewById(R.id.btn_alarm_dialog);
+        initDate();//버튼 현재날짜로
+        alarmDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    isRecording = false;
-                    bt_start.setText("측정시작");
-                    Toast.makeText(getActivity(), "측정을 종료합니다.", Toast.LENGTH_SHORT).show();
+                final DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int date) {
+                        tmp_year = year;
+                        tmp_month = month;
+                        tmp_date = date;
 
-                }
+                        String msg = String.format("%d 년 %d 월 %d 일", year, month + 1, date);
+                        alarmDialog.setText(msg);//설정한 날짜로 텍스트 변경
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            mCalendar.set(year, month, date, mTime.getHour(), mTime.getMinute());//설정한 날짜 저장
 
-                // 실행 중이지 않을 때 -> 실행
-                else {
+                        } else {
+                            mCalendar.set(year, month, date, mTime.getCurrentHour(), mTime.getCurrentMinute());//설정한 날짜 저장
+                        }
 
-                    //initAudioRecorder();
-                    //mRecorder.start();
-                    autoVoiceRecorder.startLevelCheck();//녹음 측정시작
-                    mSensorManager.registerListener(mGyroLis, mGgyroSensor, SensorManager.SENSOR_DELAY_UI);//자이로측정시작
+                        Log.i("날짜가 바뀌었습니다", mCalendar.getTime().toString());
+                        //Toast.makeText(AlarmSettingActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DATE));//오늘날짜로 기본 설정
 
-                    isRecording = true;
-                    bt_start.setText("측정종료");
-                    Toast.makeText(getActivity(), "측정을 시작합니다.", Toast.LENGTH_SHORT).show();
-
-                }
+                currentCalendar.setTime(date);
+                dialog.getDatePicker().setMinDate(currentCalendar.getTime().getTime());
+                dialog.show();
 
             }
         });
-*/
-        bt_service=layout.findViewById(R.id.bt_service);
+
+        //타임피커 현재시각으로 초기화
+        mTime = layout.findViewById(R.id.time_picker);
+        //버전에따라 다름
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            mTime.setHour(mCalendar.get(Calendar.HOUR_OF_DAY));
+            mTime.setMinute(mCalendar.get(Calendar.MINUTE));
+        } else {
+
+            mTime.setCurrentHour(mCalendar.get(Calendar.HOUR_OF_DAY));
+            mTime.setCurrentMinute(mCalendar.get(Calendar.MINUTE));
+        }
+        mTime.setOnTimeChangedListener(this);
+
+        setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);//알람 설정 정보담을 setting
+
+        repeatDialog = layout.findViewById(R.id.bt_repeat);
+        if (setting.getString("repeatTimeText", "") != null) {
+            repeatDialog.setText(setting.getString("repeatTimeText", "반복 설정"));
+        }
+        selectedTime = setting.getString("repeatTime", "0분");//설정한 반복값 설정
+
+
+
+        repeatSwitch = layout.findViewById(R.id.sw_repeatAlarm);
+        repeatSwitch.setChecked(setting.getBoolean("repeatTimeBoolean", false));
+        //초기 버튼 활성화 유무
+        if (repeatSwitch.isChecked()) repeatDialog.setEnabled(true);
+        else repeatDialog.setEnabled(false);
+
+        repeatDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String[] repeatTime = new String[]{"5분", "10분", "15분", "30분"};
+                int initIdx = setting.getInt("repeatTimeIdx", 0);
+                Log.i("initIDx : ", Integer.toString(initIdx));
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("간격")
+                        .setSingleChoiceItems(repeatTime, initIdx, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //선택한 아이템
+
+                                selectedRepeatTime = i;
+                            }
+                        }).setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        repeatDialog.setText("다시 울림(" + repeatTime[selectedRepeatTime] + ")");
+
+                        SharedPreferences.Editor editor = setting.edit();
+                        editor.putString("repeatTime", repeatTime[selectedRepeatTime]);//시간설정한 값 저장
+                        editor.commit();
+
+                        selectedTime = repeatTime[selectedRepeatTime];
+                        Log.i("selectedTime : ", selectedTime);
+                    }
+                }).setCancelable(false)
+                        .show();
+            }
+        });
+
+        repeatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    //스위치 체크되어있을때
+                    repeatDialog.setEnabled(true);
+                } else {
+                    //스위치 해제
+                    repeatDialog.setEnabled(false);
+                    selectedRepeatTime = 0;
+                }
+            }
+        });
+
+        vibeBtn = layout.findViewById(R.id.bt_vibe);
+        vibeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] vibe = new String[]{"5분", "10분", "15분", "30분"};
+                int initIdx = setting.getInt("vibeIdx", 0);
+                Log.i("initIDx : ", Integer.toString(initIdx));
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("간격")
+                        .setSingleChoiceItems(vibe, initIdx, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //선택한 아이템
+
+                                selectedRepeatTime = i;
+                            }
+                        }).setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        repeatDialog.setText("다시 울림(" +vibe[selectedRepeatTime] + ")");
+
+                        SharedPreferences.Editor editor = setting.edit();
+                        editor.putString("repeatTime", vibe[selectedRepeatTime]);//시간설정한 값 저장
+                        editor.commit();
+
+                        selectedTime =vibe[selectedRepeatTime];
+                        Log.i("selectedTime : ", selectedTime);
+                    }
+                }).setCancelable(false)
+                        .show();
+            }
+        });
+
+        vibeSwitch = layout.findViewById(R.id.sw_vibe);
+        vibeSwitch.setChecked(setting.getBoolean("isVibe", false));//체크설정
+
+        if (vibeSwitch.isChecked()) vibeBtn.setEnabled(true);
+        else vibeBtn.setEnabled(false);
+
+        vibeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    //스위치 체크되어있을때
+                    vibeBtn.setEnabled(true);
+                } else {
+                    //스위치 해제
+                    vibeBtn.setEnabled(false);
+                }
+            }
+        });
+        selectRing = layout.findViewById(R.id.bt_ring);
+        selectRing.setText(setting.getString("selectRingText", "벨소리"));
+        //if(tmpUri==null)tmpUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        selectRing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER); // 암시적 Intent
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "알람음");  // 제목을 넣는다.
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);  // 무음을 선택 리스트에서 제외
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true); // 기본 벨소리는 선택 리스트에 넣는다.
+
+                //intent.putExtra(" mp3 ", extensionFilter(Environment.getExternalStorageDirectory())); //mp3확장자도 벨소리 추가
+
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM); //알람타입으로 설정
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, true); //알람타입으로 설정
+
+
+                startActivityForResult(intent, REQUEST_CODE_RINGTONE); // 벨소리 선택 창을 안드로이드 OS에 요청
+
+            }
+        });
+        ringSwitch = layout. findViewById(R.id.sw_ring);
+        ringSwitch.setChecked(setting.getBoolean("isRing", false));//체크설정
+        //초기 버튼 활성화 유무
+        if (ringSwitch.isChecked()) selectRing.setEnabled(true);
+        else selectRing.setEnabled(false);
+        ringSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    //스위치 체크되어있을때
+                    selectRing.setEnabled(true);
+                } else {
+                    //스위치 해제
+                    selectRing.setEnabled(false);
+                }
+            }
+        });
+
+
+        bt_service = layout.findViewById(R.id.bt_service);
         bt_service.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isService) {
                     isService = false;
-                    bt_service.setText("서비스 시작");
+                    //bt_service.setText("서비스 시작");
 
-                    mService = new Intent(getActivity(),GyroRecordService.class);
+                    mService = new Intent(getActivity(), GyroRecordService.class);
                     getActivity().stopService(mService);
-                    NotificationManager notificationManager= (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
                     notificationManager.cancel(1);
-
 
 
                 }
@@ -165,9 +363,9 @@ public class First_AlarmFragment extends Fragment {
                 /* 실행 중이지 않을 때 -> 실행 */
                 else {
                     isService = true;
-                    bt_service.setText("서비스 종료");
+                    //bt_service.setText("서비스 종료");
 
-                    mService = new Intent(getActivity(),GyroRecordService.class);
+                    mService = new Intent(getActivity(), GyroRecordService.class);
                     getActivity().startService(mService);
 
 
@@ -176,60 +374,10 @@ public class First_AlarmFragment extends Fragment {
         });
 
 
-
-
-
         return layout;
     }
-   /* Handler handler = new Handler(){
-        public void handleMessage(Message msg) {
-            switch( msg.what ){
-                case AutoVoiceReconizer.VOICE_READY:
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("준비...");
-                    break;
-                case AutoVoiceReconizer.VOICE_RECONIZING:
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("목소리 인식중...");
-                    break;
-                case AutoVoiceReconizer.VOICE_RECONIZED :
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("목소리 감지... 녹음중...");
-                    break;
-                case AutoVoiceReconizer.VOICE_RECORDING_FINSHED:
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("목소리 녹음 완료 재생 버튼을 누르세요...");
-                    break;
 
-                case AutoVoiceReconizer.VOICE_PLAYING:
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("플레이중...");
-                    break;
 
-                case AutoVoiceReconizer.FILE_PATH:
-                    statusTextView.setTextColor( Color.BLACK );
-                    statusTextView.setText("서버전송중...");
-                    Log.e("파일경로ㅗ로롤로로롤ㄹㄹㄹ : ",String.valueOf(msg.obj));
-                    fileTransport ft = new fileTransport(); //녹음 종료와 동시에 서버로 파일전송
-                    ft.execute(String.valueOf(msg.obj));
-                    break;
-            }
-        }
-    };
-*/
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==101){
-            if(resultCode==RESULT_OK){
-                //getAlarmTime = getArguments().getString("alarmTime");
-                //if(getAlarmTime!=null)
-                Bundle bundle = data.getExtras();
-                getAlarmTime = bundle.getString("alarmTime");
-                bt_to_Alarm_Setting.setText(getAlarmTime);
-            }
-        }
-    }
 
     @Override
     public void onResume() {
@@ -240,234 +388,205 @@ public class First_AlarmFragment extends Fragment {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         Log.e("LOG", "onPause()");
-        //mSensorManager.unregisterListener(mGyroLis);
         deleteZeroFile();//0바이트 파일 삭제
+
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        tmpUri = Uri.parse(setting.getString("uriStr", RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString())); // 기본 벨소리(알람)의 URI 디폴트값
+        Log.i("onStart tmpUri : ", setting.getString("uriStr", RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString()));
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = setting.edit();
+
+        // if autoLogin Checked, save values
+        editor.putString("repeatTimeText", repeatDialog.getText().toString());//버튼 텍스트값 저장
+        editor.putBoolean("repeatTimeBoolean", repeatSwitch.isChecked());//반복설정 스위치값저장
+        editor.putBoolean("isVibe", vibeSwitch.isChecked());//진동설정 스위치값 저장
+        editor.putBoolean("isRing", ringSwitch.isChecked());//진동설정 스위치값 저장
+        editor.putInt("repeatTimeIdx", selectedRepeatTime);//라디오 인덱스값
+        editor.putString("ringtoneUri",tmpUri.toString());//벨소리 uri
+        editor.commit();
+
+
+    }
+
+    public void deleteZeroFile() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer";
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].length() == 0) {
+                Log.i("파일 사이즈", Long.toString(files[i].length()));
+                if (files[i].exists()) {
+                    if (files[i].delete()) {
+                        Log.i("파일삭제 성공", "");
+                    } else {
+                        Log.i("파일삭제 실패", "");
+                    }
+                } else Log.i("file does not exist", " ");
+
+            }
+        }
 
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
-
-        //mSensorManager.unregisterListener(mGyroLis);
-
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(SERVICE_STATE,isService);
+        super.onSaveInstanceState(outState);
     }
+    //알람의 설정
+    private void setAlarm() {
+        currentCalendar = Calendar.getInstance();
+        if (mCalendar.compareTo(currentCalendar) <= 0) {
+            Toast.makeText(getActivity(), "현재시간보다 전입니다. 알람시간을 다시 설정하세요.", Toast.LENGTH_LONG).show();
+        } else {
 
-
-
-
-/*
-    private class RecorderTask extends TimerTask {
-
-        private MediaRecorder mRecorder;
-
-        public RecorderTask(MediaRecorder mRecorder) {
-            this.mRecorder = mRecorder;
-        }
-
-        public void run(){
-           getActivity().runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                   int amplitude = mRecorder.getMaxAmplitude();
-                   double amplitudeDb = 20 * Math.log10((double) Math.abs(amplitude) / 32768);//로그안에 들어있는값 제곱해보기
-                   test.setText("" + amplitudeDb);
-               }
-           });
-       }
-
-    }*/
-/*
-    private class GyroscopeListener implements SensorEventListener {
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-
-            /* 각 축의 각속도 성분을 받는다.
-            double gyroX = event.values[0];
-            double gyroY = event.values[1];
-            double gyroZ = event.values[2];
-
-             각속도를 적분하여 회전각을 추출하기 위해 적분 간격(dt)을 구한다.
-             * dt : 센서가 현재 상태를 감지하는 시간 간격
-             * NS2S : nano second -> second
-            dt = (event.timestamp - timestamp) * NS2S;
-            timestamp = event.timestamp;
-
-             맨 센서 인식을 활성화 하여 처음 timestamp가 0일때는 dt값이 올바르지 않으므로 넘어간다.
-            if (dt - timestamp*NS2S != 0) {
-
-                /* 각속도 성분을 적분 -> 회전각(pitch, roll)으로 변환.
-                 * 여기까지의 pitch, roll의 단위는 '라디안'이다.
-                 * SO 아래 로그 출력부분에서 멤버변수 'RAD2DGR'를 곱해주어 degree로 변환해줌.
-                pitch = pitch + gyroY*dt;
-                roll = roll + gyroX*dt;
-                yaw = yaw + gyroZ*dt;
-
-                tv_roll.setText("roll : "+roll);
-                tv_pitch.setText("pitch : "+pitch);
-
-                Log.e("LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
-                        + "           [Y]:" + String.format("%.4f", event.values[1])
-                        + "           [Z]:" + String.format("%.4f", event.values[2])
-                        + "           [Pitch]: " + String.format("%.1f", pitch*RAD2DGR)
-                        + "           [Roll]: " + String.format("%.1f", roll*RAD2DGR)
-                        + "           [Yaw]: " + String.format("%.1f", yaw*RAD2DGR)
-                        + "           [dt]: " + String.format("%.4f", dt));
-
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-        }
-    }
-    */
-    public void deleteZeroFile(){
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DeepDreamer";
-        File dir = new File(path);
-        File[] files = dir.listFiles();
-
-        for(int i=0;i<files.length;i++){
-            if(files[i].length()==0){
-                Log.i("파일 사이즈", Long.toString(files[i].length()));
-                if(files[i].exists()){
-                    if(files[i].delete()){
-                        Log.i("파일삭제 성공","");
-                    }
-                    else{
-                        Log.i("파일삭제 실패","");
-                    }
+            if (repeatSwitch.isChecked()) {//반복 주기 설정 했을때
+                try {
+                    int t = Integer.parseInt(selectedTime.substring(0, selectedTime.length() - 1));//반복 주기
+                    Log.i("자른거 : ", selectedTime.substring(0, selectedTime.length() - 1));
+                    //mManager.setRepeating(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), 1000*60*t,pendingIntent());//반복주기 설정
+                    mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());//알람 설정
+                    //Toast.makeText(AlarmSettingActivity.this, t + "분 반복 알람", Toast.LENGTH_LONG).show();
+                } catch (NullPointerException e) {
+                    Toast.makeText(getActivity(), "반복알람 시간을 체크하세요", Toast.LENGTH_LONG).show();
                 }
-                else Log.i("file does not exist"," ");
+                //setInexactRepeating(AlarmManager.RTC, tomorrow.getTime(), 24 * 60 * 60 * 1000, sender); 24시간 마다 울림
 
+            }else{
+                mManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), pendingIntent());//알람 설정
             }
+
+            int date = mCalendar.get(mCalendar.DATE) - currentCalendar.get(Calendar.DATE);
+            int hour = mCalendar.get(mCalendar.HOUR) - currentCalendar.get(Calendar.HOUR);
+            int minute = mCalendar.get(mCalendar.MINUTE) - currentCalendar.get(Calendar.MINUTE);
+
+            if (minute < 0) {
+                minute = 60 + minute;
+                hour = hour - 1;
+            }
+            if (hour < 0) {
+                hour = 24 + hour;
+                date = date - 1;
+            }
+
+            if (date == 0) {
+                if (hour == 0) {
+                    Toast.makeText(getActivity(), minute + "분 후 알람이 울립니다.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), date + "시간" + minute + "분 후 알람이 울립니다.", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), date + "일" + hour + "시간" + minute + "분 후 알람이 울립니다.", Toast.LENGTH_LONG).show();
+            }
+
+            Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
+
+
+            //Intent intent = new Intent(getActivity(), MainActivity.class);
+            //Bundle bundle = new Bundle();
+            //bundle.putString("alarmTime", String.format("%d 시 %d 분", mCalendar.get(mCalendar.HOUR), mCalendar.get(mCalendar.MINUTE)));
+            //intent.putExtras(bundle);
+            //setResult(Activity.RESULT_OK, intent);
+            //finish();
         }
 
     }
 
-    /*
-    public class fileTransport extends AsyncTask<String, Integer, Void> {
+    //알람의 해제
+    private void resetAlarm() {
+        mManager.cancel(pendingIntent());
+        //Intent intent = new Intent(getActivity(), MainActivity.class);
+        //Bundle bundle = new Bundle();
+        //bundle.putString("alarmTime", "알람 설정");//알람 해제 했을때 다시 알람 설정으로
+        //intent.putExtras(bundle);
+        //setResult(Activity.RESULT_OK, intent);
+        //finish();
 
+        Log.i("알람이 해제되었습니다", mCalendar.getTime().toString());
+    }
 
-        FileInputStream fileInputStream = null;
+    //알람의 설정 시각에 발생하는 인텐트 작성
+    private PendingIntent pendingIntent() {
+        Intent i = new Intent(getActivity(), AlarmReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(getActivity(), 0, i, 0);
+        return pi;
+    }
 
+    //시각 설정 클래스의 상태변화 리스너
+    public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+        mCalendar.set(tmp_year, tmp_month, tmp_date, hourOfDay, minute);
+        Log.i("시간이 바뀌었습니다", mCalendar.getTime().toString());
+    }
 
-        @Override
-        protected Void doInBackground(String... params) {
-
-            String iFileName = params[0];
-            String lineEnd = "\r\n";
-            String twoHyphens = "--";
-            String boundary = "*****";
-            String Tag="fSnd";
-
-            //인풋확인 로그캣
-            Log.e("파리미터----------->:",params[0]);
-            File sourceFile = new File(params[0]);
-            try {
-                fileInputStream = new FileInputStream(sourceFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+    private void initDate() {
+        //현재날짜로 설정
+        final String initMsg = String.format("%d 년 %d 월 %d 일", tmp_year, tmp_month + 1, tmp_date);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // runOnUiThread를 추가하고 그 안에 UI작업을 한다.
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        alarmDialog.setText(initMsg);
+                    }
+                });
             }
-            try {
-             //서버연결
-
-                URL url = new URL("http://192.168.0.89/transport.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                // Allow Inputs
-                conn.setDoInput(true);
-                // Allow Outputs
-                conn.setDoOutput(true);
-                // Don't use a cached copy.
-                conn.setUseCaches(false);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("uploaded_file", iFileName);
+        }).start();
+        Log.i("initMsg : ", initMsg);
+        Log.i("처음 시간 설정값", mCalendar.getTime().toString());
+        Log.i("intiMsg : ", initMsg);
+    }
 
 
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-                // 안드로이드 -> 서버 파라메터값 전달
-                DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+        super.onActivityResult(requestCode, resultCode, intent);
 
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
+        switch (requestCode) {
 
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + iFileName +"\"" + lineEnd);
-                dos.writeBytes(lineEnd);
+            case REQUEST_CODE_RINGTONE:
 
-                Log.e(Tag,"Headers are written");
+                if (resultCode == RESULT_OK) {
 
-                // create a buffer of maximum size
-                int bytesAvailable = fileInputStream.available();
+                    // 선택한 Ringtone(벨소리)를 받아온다.
+                    try {
 
-                int maxBufferSize = 1024;
-                int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                byte[ ] buffer = new byte[bufferSize];
+                        Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                        tmpUri = uri;
+                        Log.i("onActivity tmpUri: ", tmpUri.toString());
+                        // 벨소리 이름 얻는 방법
 
-                // read file and write it into form...
-                int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                        String ringToneName = RingtoneManager.getRingtone(getContext(), uri).getTitle(getContext());
+                        selectRing.setText("벨소리(" + ringToneName + ")");
 
-                while (bytesRead > 0)
-                {
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable,maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0,bufferSize);
+
+                        SharedPreferences.Editor editor = setting.edit();
+                        editor.putString("uriStr", uri.toString());
+                        editor.putString("selectRingText", selectRing.getText().toString());//시간설정한 값 저장
+                        editor.commit();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        //Toast.makeText(getContext(),"fail",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                // close streams
-                fileInputStream.close();
-
-                dos.flush();
-
-                //리스폰 코드 로그캣
-                Log.e(Tag,"File Sent, Response: "+String.valueOf(conn.getResponseCode()));
-
-                InputStream is = conn.getInputStream();
-
-                // retrieve the response from server
-                int ch;
-
-                StringBuffer b =new StringBuffer();
-                while( ( ch = is.read() ) != -1 ){ b.append( (char)ch ); }
-                String s=b.toString();
-
-                //로그캣
-                Log.i("Response",s);
-
-                dos.close();
-
-
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            Toast.makeText(getActivity(), "파일전송 성공!!.", Toast.LENGTH_SHORT).show();
-
 
         }
 
-    }*/
-
-
+    }
 
 
 

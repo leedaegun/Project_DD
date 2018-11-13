@@ -81,7 +81,7 @@ public class AutoVoiceReconizer {
         this.handler = handler;
         File path = new File(
                 Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/DeepDreamer/");
+                        + "/DeepDreamer/soundData/");
         path.mkdirs();
         try {
             recordingFile = File.createTempFile("recording", ".mp3", path);//""+tmp_year + "/" + tmp_month+ "/" + tmp_date + "/"+tmp_hour+":" + tmp_mintue+

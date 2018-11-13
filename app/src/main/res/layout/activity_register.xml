@@ -7,7 +7,8 @@
     android:background="@drawable/login"
     tools:context="com.example.lg.deepdreamer.activity.RegisterActivity"
     android:orientation="vertical"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:onClick="focusOut">
 
     <LinearLayout
         android:id="@+id/ll_1"
