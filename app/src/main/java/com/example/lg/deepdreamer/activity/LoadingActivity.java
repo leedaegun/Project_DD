@@ -21,7 +21,7 @@ public class LoadingActivity extends AppCompatActivity {
 
         try{
             checkPermission();
-            Thread.sleep(4000);     //대기 초 설정
+            Thread.sleep(1000);     //대기 초 설정
         }catch (InterruptedException e){
             e.printStackTrace();
         }

@@ -62,19 +62,20 @@ public class Second_Measurement_secondFragment extends Fragment {
 
         Description description = new Description();
         description.setText("수면 시간"); //라벨
+        description.setTextColor(Color.DKGRAY);
         description.setTextSize(15);
         pieChart.setDescription(description);
 
         pieChart.animateY(1000, Easing.EasingOption.EaseInOutCubic); //애니메이션
 
-        PieDataSet dataSet = new PieDataSet(yValues,"Countries");
+        PieDataSet dataSet = new PieDataSet(yValues," ");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
         dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
         PieData data = new PieData((dataSet));
         data.setValueTextSize(10f);
-        data.setValueTextColor(Color.YELLOW);
+        data.setValueTextColor(Color.DKGRAY);
 
         pieChart.setData(data);
         return layout;

@@ -80,7 +80,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
 
     //서비스 변수
 
-    Intent mService;
+    public Intent mService;
 
     public First_AlarmFragment() {
         // Required empty public constructor
@@ -118,12 +118,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
             public void onClick(View v) {
 
                 setAlarm();
-                //dbHelper.insert(mCalendar.get(mCalendar.MONTH) + 1, mCalendar.get(mCalendar.HOUR_OF_DAY), mCalendar.get(mCalendar.MINUTE));//addAlarm(int on, int day, int hour, int min, int vib, String ring)
 
-                Log.i("년 : ", Integer.toString(mCalendar.get(mCalendar.YEAR)));
-                Log.i("달 : ", Integer.toString(mCalendar.get(mCalendar.MONTH)));
-                Log.i("분 : ", Integer.toString(mCalendar.get(mCalendar.MINUTE)));
-                //Log.i("result : ", dbHelper.getResult());
 
             }
         });
@@ -350,8 +345,8 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
             public void onClick(View view) {
                 if (isService) {
                     isService = false;
-                    //bt_service.setText("서비스 시작");
 
+                    bt_service.setImageResource(R.drawable.ic_service_start);
                     mService = new Intent(getActivity(), GyroRecordService.class);
                     getActivity().stopService(mService);
                     NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
@@ -363,8 +358,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
                 /* 실행 중이지 않을 때 -> 실행 */
                 else {
                     isService = true;
-                    //bt_service.setText("서비스 종료");
-
+                    bt_service.setImageResource(R.drawable.ic_record_stop);
                     mService = new Intent(getActivity(), GyroRecordService.class);
                     getActivity().startService(mService);
 
@@ -403,23 +397,13 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
     @Override
     public void onStop() {
         super.onStop();
-        setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = setting.edit();
 
-        // if autoLogin Checked, save values
-        editor.putString("repeatTimeText", repeatDialog.getText().toString());//버튼 텍스트값 저장
-        editor.putBoolean("repeatTimeBoolean", repeatSwitch.isChecked());//반복설정 스위치값저장
-        editor.putBoolean("isVibe", vibeSwitch.isChecked());//진동설정 스위치값 저장
-        editor.putBoolean("isRing", ringSwitch.isChecked());//진동설정 스위치값 저장
-        editor.putInt("repeatTimeIdx", selectedRepeatTime);//라디오 인덱스값
-        editor.putString("ringtoneUri",tmpUri.toString());//벨소리 uri
-        editor.commit();
 
 
     }
 
     public void deleteZeroFile() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer/gyroData";
         File dir = new File(path);
         File[] files = dir.listFiles();
 
@@ -492,13 +476,18 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
 
             Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
 
+            setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor editor = setting.edit();
 
-            //Intent intent = new Intent(getActivity(), MainActivity.class);
-            //Bundle bundle = new Bundle();
-            //bundle.putString("alarmTime", String.format("%d 시 %d 분", mCalendar.get(mCalendar.HOUR), mCalendar.get(mCalendar.MINUTE)));
-            //intent.putExtras(bundle);
-            //setResult(Activity.RESULT_OK, intent);
-            //finish();
+            // if autoLogin Checked, save values
+            editor.putString("repeatTimeText", repeatDialog.getText().toString());//버튼 텍스트값 저장
+            editor.putBoolean("repeatTimeBoolean", repeatSwitch.isChecked());//반복설정 스위치값저장
+            editor.putBoolean("isVibe", vibeSwitch.isChecked());//진동설정 스위치값 저장
+            editor.putBoolean("isRing", ringSwitch.isChecked());//진동설정 스위치값 저장
+            editor.putInt("repeatTimeIdx", selectedRepeatTime);//라디오 인덱스값
+            editor.putString("ringtoneUri",tmpUri.toString());//벨소리 uri
+            editor.commit();
+
         }
 
     }
@@ -506,12 +495,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
     //알람의 해제
     private void resetAlarm() {
         mManager.cancel(pendingIntent());
-        //Intent intent = new Intent(getActivity(), MainActivity.class);
-        //Bundle bundle = new Bundle();
-        //bundle.putString("alarmTime", "알람 설정");//알람 해제 했을때 다시 알람 설정으로
-        //intent.putExtras(bundle);
-        //setResult(Activity.RESULT_OK, intent);
-        //finish();
+
 
         Log.i("알람이 해제되었습니다", mCalendar.getTime().toString());
     }

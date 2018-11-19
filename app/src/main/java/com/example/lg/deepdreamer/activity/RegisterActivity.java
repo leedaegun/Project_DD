@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.server.RegisterAuth;
 import com.example.lg.deepdreamer.server.RegisterDB;
 
 import java.util.ArrayList;
@@ -31,10 +32,11 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
     private Calendar mCalendar;
     private CheckBox cb_male,cb_female;
-    private Button bt_cancel;
+    private Button bt_cancel,bt_email_chk;
     private InputMethodManager inputMethodManager;
+    private Boolean isEmailChk=false;
+    RegisterAuth registerAuth;
     RegisterDB registerDB;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         bt_cancel = (Button)findViewById(R.id.bt_cancel);//취소버튼
         et_Name = (EditText) findViewById(R.id.et_Name);//이름
         et_Email=(EditText)findViewById(R.id.et_Email);//이메일
+        bt_email_chk =(Button)findViewById(R.id.bt_email_chk);//이메일 중복확인
         et_Pw = (EditText) findViewById(R.id.et_Pw);//패스워드
         et_pw_chk = (EditText) findViewById(R.id.et_pw_chk);//패스워드 체크
         spinner = (Spinner)findViewById(R.id.spinner);//생년월일 스피너
@@ -66,6 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         et_pw_chk.setInputType(InputType.TYPE_CLASS_TEXT);
         PasswordTransformationMethod et_pw_chk_fm = new PasswordTransformationMethod();
         et_pw_chk.setTransformationMethod(et_pw_chk_fm);
+
 
         //리스트에 현재 기준 년수 -100 부터
         mCalendar = Calendar.getInstance();
@@ -156,6 +160,24 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    public void bt_email_chk(View v){
+        if(et_Email.getText().toString().length()<1){
+            Toast.makeText(RegisterActivity.this,"이메일을 입력해주세요.",Toast.LENGTH_LONG).show();
+        }
+        else{
+
+            try {
+                registerAuth = new RegisterAuth(this);
+                registerAuth.execute("u_email="+et_Email.getText().toString()+"");
+                isEmailChk = true;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            }
+
+    }
     public  void bt_register(View v){
 
         //버튼이 동작할때
@@ -181,18 +203,18 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this,"성별을 체크해주세요.",Toast.LENGTH_LONG).show();
         }
         else{
+            if(!isEmailChk)Toast.makeText(RegisterActivity.this,"중복체크를 해주세요.",Toast.LENGTH_LONG).show();
+            else{
             if(sPw.equals(sPw_chk)){
                 //pw 일치시
                 String param = "u_id=" + sName + "&u_email=" + sEmail + "&u_pw=" + sPw  + "&u_birth=" + birth + "&u_sex=" + sex + "";
                 registerDB = new RegisterDB(this);
                 registerDB.execute(param);
-                //registDB rdb = new registDB();
-                //rdb.execute();
-
             }
             else{
                 //pw 불일치시
                 Toast.makeText(RegisterActivity.this,"패스워드가 다릅니다.",Toast.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -200,104 +222,6 @@ public class RegisterActivity extends AppCompatActivity {
     public void focusOut(View v){
         inputMethodManager.hideSoftInputFromWindow(et_pw_chk.getWindowToken(),0);
     }
-    /*
-    public class registDB extends AsyncTask<Void, Integer, Void> {
-        String data = "";
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(RegisterActivity.this);
-
-        @Override
-        protected Void doInBackground(Void... unused) {
-
-// 인풋 파라메터값 생성
-            String param = "u_id=" + sName + "&u_email=" + sEmail + "&u_pw=" + sPw  + "&u_birth=" + birth + "&u_sex=" + sex + "";
-            try {
-// 서버연결
-
-                URL url = new URL(managerServer.getRegisterIP());
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setReadTimeout(15000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.connect();
-
-// 안드로이드 -> 서버 파라메터값 전달
-                OutputStream outs = conn.getOutputStream();
-                outs.write(param.getBytes("UTF-8"));
-                outs.flush();
-                outs.close();
-
-// 서버 -> 안드로이드 파라메터값 전달
-                InputStream is = null;
-                BufferedReader in = null;
-
-
-                is = conn.getInputStream();
-                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
-                String line = null;
-                StringBuffer buff = new StringBuffer();
-                while ( ( line = in.readLine() ) != null )
-                {
-                    buff.append(line + "\n");
-                }
-                data = buff.toString().trim();
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid){
-            super.onPostExecute(aVoid);
-
-            Log.e("RECV DATA",data);
-
-            if(data.equals("0"))
-            {
-                Log.e("RESULT","성공적으로 처리되었습니다!");
-                alertBuilder
-                        .setTitle("알림")
-                        .setMessage("성공적으로 등록되었습니다!")
-                        .setCancelable(true)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                AlertDialog dialog = alertBuilder.create();
-                dialog.show();
-            }
-            else
-            {
-                Log.e("RESULT","에러 발생! ERRCODE = " + data);
-                alertBuilder
-                        .setTitle("알림")
-                        .setMessage("등록중 에러가 발생했습니다! errcode : "+ data)
-                        .setCancelable(true)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                AlertDialog dialog = alertBuilder.create();
-                dialog.show();
-            }
-
-
-
-
-
-        }
-
-    }*/
 
 
 

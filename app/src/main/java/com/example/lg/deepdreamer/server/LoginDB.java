@@ -16,9 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -94,11 +96,17 @@ public class LoginDB extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {//Void aVoid
         //super.onPostExecute(aVoid);
         super.onPostExecute(result);
-
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
-        //Log.e("조건문전에",data+"lkj");
+        //Log.e("조건문전에data",data.getBytes().toString());
+        try{
 
-        if(true)//data.equals("1")
+            data = URLEncoder.encode(data,"EUC-KR");
+
+        }catch (UnsupportedEncodingException e1){
+            e1.printStackTrace();
+        }
+        Log.e("변환후 data",data.getBytes().toString());
+        if(data.equals("%3F1"))//data.equals("1")
         {
             Log.e("RESULT","로그인 성공!");
 
@@ -107,12 +115,12 @@ public class LoginDB extends AsyncTask<String, Integer, String> {
             context.startActivity(intent);
             ((Activity)context).finish();
         }
-        else if(data.equals("notfind"))
+        else if(data.equals("%3Fnotfind"))
         {
             Log.e("RESULT","비밀번호가 일치하지 않습니다.");
             alertBuilder
                     .setTitle("알림")
-                    .setMessage("비밀번호가 일치하지 않습니다.")
+                    .setMessage("이메일과 비밀번호를 확인해주세요.")
                     .setCancelable(true)
                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override

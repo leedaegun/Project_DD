@@ -59,23 +59,39 @@
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#FFFFFF" />
-
-            <EditText
-                android:id="@+id/et_Email"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:backgroundTint="#FFFFFF"
-                android:ems="10"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:hint="E-mail"
-                android:inputType="textPersonName"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF" />
+                android:layout_height="50dp">
+                <EditText
+                    android:id="@+id/et_Email"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:backgroundTint="#FFFFFF"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:privateImeOptions="defaultInputmode=english;"
+                    android:hint="E-mail"
+                    android:inputType="textPersonName"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#FFFFFF" />
+                <Button
+                    android:id="@+id/bt_email_chk"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:onClick="bt_email_chk"
+                    android:background="#00FF0000"
+                    android:text="중복확인"
+                    />
+
+</LinearLayout>
+
 
             <LinearLayout
-                android:layout_width="240dp"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:background="@drawable/layout_bg"
@@ -83,7 +99,7 @@
 
                 <TextView
                     android:id="@+id/textView4"
-                    android:layout_width="120dp"
+                    android:layout_width="160dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -124,7 +140,7 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:buttonTint="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:text="남성"
                     android:textColor="#FFFFFF" />
 
@@ -133,7 +149,7 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:buttonTint="#FFFFFF"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:text="여성"
                     android:textColor="#FFFFFF" />
 
@@ -148,6 +164,7 @@
                 android:ems="10"
                 android:gravity="center"
                 android:hint="Password"
+                android:privateImeOptions="defaultInputmode=english;"
                 android:inputType="textPersonName"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
@@ -162,6 +179,7 @@
                 android:ems="10"
                 android:gravity="center"
                 android:hint="Password Check"
+                android:privateImeOptions="defaultInputmode=english;"
                 android:inputType="textPersonName"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"

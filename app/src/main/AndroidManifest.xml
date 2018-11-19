@@ -64,7 +64,6 @@
             android:exported="true" />
 
         <activity android:name=".activity.AlarmPopUpActivity" />
-        <activity android:name=".activity.RegisterAuthActivity" />
         <activity android:name=".activity.Socket_TCP_IP"></activity>
     </application>
 

@@ -296,48 +296,6 @@ public class AlarmSettingActivity extends AppCompatActivity implements TimePicke
                 }
             }
         });
-/*
-        toggleButton10 = (ToggleButton)findViewById(R.id.tb_10min);
-        toggleButton30 = (ToggleButton)findViewById(R.id.tb_30min);
-        toggleButton40 = (ToggleButton)findViewById(R.id.tb_40min);
-        toggleButton60 = (ToggleButton)findViewById(R.id.tb_1hour);
-
-        ToggleButton.OnClickListener onClickListener = new ToggleButton.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.tb_10min :
-                        toggleButton30.setChecked(false);
-                        toggleButton40.setChecked(false);
-                        toggleButton60.setChecked(false);
-                        break;
-                    case R.id.tb_30min :
-                        toggleButton10.setChecked(false);
-                        toggleButton40.setChecked(false);
-                        toggleButton60.setChecked(false);
-                        break;
-                    case R.id.tb_40min :
-                        toggleButton30.setChecked(false);
-                        toggleButton10.setChecked(false);
-                        toggleButton60.setChecked(false);
-                        break;
-                    case R.id.tb_1hour :
-                        toggleButton30.setChecked(false);
-                        toggleButton40.setChecked(false);
-                        toggleButton10.setChecked(false);
-
-                        break;
-                }
-
-            }
-        };
-
-        toggleButton10.setOnClickListener(onClickListener);
-        toggleButton30.setOnClickListener(onClickListener);
-        toggleButton40.setOnClickListener(onClickListener);
-        toggleButton60.setOnClickListener(onClickListener);
-
-*/
     }
 
     //알람의 설정

@@ -3,6 +3,7 @@ package com.example.lg.deepdreamer.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private ViewPager vp;
+    private PagerAdapter pagerAdapter;
     private LinearLayout ll;
     private ImageButton tab_default,tab_first,tab_second,tab_third;
 
@@ -45,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         tab_second = (ImageButton)findViewById(R.id.tab_second);//세번째 탭
         tab_third = (ImageButton)findViewById(R.id.tab_third);//네번째 탭
 
-        vp.setAdapter(new pagerAdapter(getSupportFragmentManager()));
+        pagerAdapter = new pagerAdapter(getSupportFragmentManager());
+        vp.setAdapter(pagerAdapter);
         vp.setCurrentItem(0);
 
         tab_default.setOnClickListener(movePageListener);
@@ -180,5 +183,10 @@ public class MainActivity extends AppCompatActivity {
             toast = Toast.makeText(activity, "\'뒤로\'버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT); toast.show(); }
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        pagerAdapter.notifyDataSetChanged();
+    }
 
 }

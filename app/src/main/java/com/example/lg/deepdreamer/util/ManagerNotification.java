@@ -3,9 +3,7 @@ package com.example.lg.deepdreamer.util;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +11,6 @@ import android.graphics.Color;
 import android.os.Build;
 
 import com.example.lg.deepdreamer.R;
-import com.example.lg.deepdreamer.activity.MainActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -48,14 +45,14 @@ public class ManagerNotification {
             builder = new Notification.Builder(context);
         }
 
-        builder.setSmallIcon(R.drawable.ic_action_name)
+        builder.setSmallIcon(R.drawable.logo)
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle("알람")
                 .setContentText("알람 설정한 시간입니다.")
                 //.setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo_shadow);
+        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo);
         builder.setLargeIcon(largeIcon);//큰 아이콘
         builder.setColor(Color.RED);//색깔
 
@@ -66,7 +63,7 @@ public class ManagerNotification {
     public static void operatingService(Context context) {
         Notification.Builder builder;
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
+       // PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);//알림 클릭시 메인화면으로
 
 
         NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -82,14 +79,14 @@ public class ManagerNotification {
             builder = new Notification.Builder(context);
         }
 
-        builder.setSmallIcon(R.drawable.ic_action_name)
+        builder.setSmallIcon(R.drawable.logo)
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle("서비스")
                 .setContentText("서비스 동작 중입니다.")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
+   //             .setContentIntent(pendingIntent)
+                .setAutoCancel(false);
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo_shadow);
+        Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo);
         builder.setLargeIcon(largeIcon);//큰 아이콘
         builder.setColor(Color.RED);//색깔
 

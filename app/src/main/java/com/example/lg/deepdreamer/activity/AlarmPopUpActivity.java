@@ -15,7 +15,7 @@ public class AlarmPopUpActivity extends AppCompatActivity {
 
     //알람 울릴때 팝업되는 화면
 
-    Button stopService;
+    private Button stopService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

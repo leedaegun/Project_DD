@@ -40,7 +40,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/statics_btn_off" />
+            android:src="@drawable/statics_btn_selector" />
 
         <ImageButton
             android:id="@+id/tab_third"
@@ -50,7 +50,7 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/setting_btn_off" />
+            android:src="@drawable/setting_btn_selector" />
     </LinearLayout>
 
 

@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +21,10 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
+import com.example.lg.deepdreamer.R;
 import com.example.lg.deepdreamer.activity.DetailSettingActivity;
 import com.example.lg.deepdreamer.activity.LoginActivity;
-import com.example.lg.deepdreamer.R;
+import com.example.lg.deepdreamer.util.AutoVoiceReconizer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class Third_SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_third__setting, container, false);
-
+        deleteZeroFile();
         autoVoiceRecorder = new AutoVoiceReconizer(handler );//재생클래스 선언
 
         bt_goto_detail_setting=layout.findViewById(R.id.bt_goto_detail_setting);
@@ -88,6 +89,7 @@ public class Third_SettingFragment extends Fragment {
                             }
                         })
                         .show();
+
             }
         });
 
@@ -119,6 +121,8 @@ public class Third_SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 autoVoiceRecorder.stopVoice();
+                Toast.makeText(getActivity(),"재생 중지..", Toast.LENGTH_SHORT).show();
+                refresh();
             }
         });
 
@@ -169,7 +173,31 @@ public class Third_SettingFragment extends Fragment {
         super.onStop();
 
     }
+    public void deleteZeroFile() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DeepDreamer/soundData/";
+        File dir = new File(path);
+        File[] files = dir.listFiles();
 
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].length() == 0) {
+                Log.i("파일 사이즈", Long.toString(files[i].length()));
+                if (files[i].exists()) {
+                    if (files[i].delete()) {
+                        Log.i("파일삭제 성공", "");
+                    } else {
+                        Log.i("파일삭제 실패", "");
+                    }
+                } else Log.i("file does not exist", " ");
+
+            }
+        }
+
+    }
+    public void refresh(){
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.detach(this).attach(this).commit();
+    }
 
 }
 

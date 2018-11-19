@@ -12,15 +12,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Created by lg on 2018-09-02.
  */
 
-public class RegisterDB extends AsyncTask<String, Integer, Void> {
+public class RegisterDB extends AsyncTask<String, Integer, String> {
 
     private Context context;
     String data = "";
@@ -30,7 +32,7 @@ public class RegisterDB extends AsyncTask<String, Integer, Void> {
         this.context = context;
     }
     @Override
-    protected Void doInBackground(String... param) {
+    protected String doInBackground(String... param) {
 
 /* 인풋 파라메터값 생성 */
         try {
@@ -66,6 +68,7 @@ public class RegisterDB extends AsyncTask<String, Integer, Void> {
             }
             data = buff.toString().trim();
 
+            return data;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -76,13 +79,20 @@ public class RegisterDB extends AsyncTask<String, Integer, Void> {
         return null;
     }
     @Override
-    protected void onPostExecute(Void aVoid){
-        super.onPostExecute(aVoid);
+    protected void onPostExecute(String s){
+        super.onPostExecute(s);
         Log.e("RECV DATA",data);
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        try{
 
+            data = URLEncoder.encode(data,"EUC-KR");
 
-        if(data.equals("0"))
+        }catch (UnsupportedEncodingException e1){
+            e1.printStackTrace();
+        }
+
+        Log.e("RECV DATA",data);
+        if(data.equals("%3F0"))
         {
             Log.e("RESULT","성공적으로 처리되었습니다!");
             alertBuilder
