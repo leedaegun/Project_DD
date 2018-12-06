@@ -43,14 +43,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //권한체크
-        //checkPermission();
-        //inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         //뒤로 두번 -> 종료
         backPressCloseHandler = new BackPressCloseHandler(this);
-        //if(NetworkConnection() == false){//네트워크 상태확인
-          //  NotConnected_showAlert();
-        //}
+        if(!NetworkConnection()){//네트워크 상태확인
+            NotConnected_showAlert();
+        }
 
 
         et_Email = (EditText)findViewById(R.id.main_et_Email);//이메일 입력
@@ -220,17 +217,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     private boolean NetworkConnection() {
-        ConnectivityManager manager = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
-        boolean isMobileAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isAvailable();
-        boolean isMobileConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
-        boolean isWifiAvailable = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isAvailable();
-        boolean isWifiConnect = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if ((isWifiAvailable && isWifiConnect) || (isMobileAvailable && isMobileConnect)){
-            return true;
-        }else{
-            return false;
-        }
+        return cm.getActiveNetworkInfo() != null;
     }
 
 }

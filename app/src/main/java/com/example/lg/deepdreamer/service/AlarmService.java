@@ -58,30 +58,8 @@ public class AlarmService extends Service {
         setting = getSharedPreferences("setting", Activity.MODE_PRIVATE);
 
 
-        /*
-        startForeground(1,new Notification());
-
-        //startForeground 를 사용하면 notification 을 보여주어야 하는데 없애기 위한 코드
-
-        NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        Notification notification;
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-
-            notification = new Notification.Builder(getApplicationContext())
-                    .setContentTitle("")
-                    .setContentText("")
-                    .build();
-
-        }else{
-            notification = new Notification(0, "", System.currentTimeMillis());
-            notification.setLatestEventInfo(getApplicationContext(), "", "", null);
-        }
-
-        nm.notify(startId, notification);
-        nm.cancel(startId);*/
         Uri ringring = Uri.parse(setting.getString("ringtoneUri", RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM).toString()));
-                //intent.getParcelableExtra("ringUri");//사용자가 선택한 벨소리
+        //intent.getParcelableExtra("ringUri");//사용자가 선택한 벨소리
 
         //if(intent.getBooleanExtra("isVibe",false)) playMusic(ringring);    // 음악 및 진동 시작
         //if(intent.getBooleanExtra("isRing",false)) vibrator();
@@ -90,6 +68,7 @@ public class AlarmService extends Service {
         if(setting.getBoolean("isVibe",false)) vibrator();
 
         Intent popUpIntent = new Intent(this,AlarmPopUpActivity.class);//알람 종료 화면
+        popUpIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(popUpIntent);
 
         //Log.i("서비스에서 받은 ringUri : ",intent.getParcelableExtra("ringUri").toString());//

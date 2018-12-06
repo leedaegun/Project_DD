@@ -54,7 +54,7 @@ public class ManagerNotification {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo);
         builder.setLargeIcon(largeIcon);//큰 아이콘
-        builder.setColor(Color.RED);//색깔
+        builder.setColor(Color.WHITE);//색깔
 
 
         notificationmanager.notify(serviceAlarmID, builder.build());}
@@ -88,7 +88,7 @@ public class ManagerNotification {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.logo);
         builder.setLargeIcon(largeIcon);//큰 아이콘
-        builder.setColor(Color.RED);//색깔
+        builder.setColor(Color.WHITE);//색깔
 
 
         notificationmanager.notify(serviceChennelID, builder.build());

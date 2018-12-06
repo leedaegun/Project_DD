@@ -248,6 +248,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
         vibeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 final String[] vibe = new String[]{"5분", "10분", "15분", "30분"};
                 int initIdx = setting.getInt("vibeIdx", 0);
                 Log.i("initIDx : ", Integer.toString(initIdx));
@@ -264,7 +265,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        repeatDialog.setText("다시 울림(" +vibe[selectedRepeatTime] + ")");
+                        //repeatDialog.setText("다시 울림(" +vibe[selectedRepeatTime] + ")");
 
                         SharedPreferences.Editor editor = setting.edit();
                         editor.putString("repeatTime", vibe[selectedRepeatTime]);//시간설정한 값 저장
@@ -272,9 +273,10 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
 
                         selectedTime =vibe[selectedRepeatTime];
                         Log.i("selectedTime : ", selectedTime);
+
                     }
                 }).setCancelable(false)
-                        .show();
+                        .show();*/
             }
         });
 
@@ -298,7 +300,6 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
         });
         selectRing = layout.findViewById(R.id.bt_ring);
         selectRing.setText(setting.getString("selectRingText", "벨소리"));
-        //if(tmpUri==null)tmpUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         selectRing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -397,6 +398,17 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
     @Override
     public void onStop() {
         super.onStop();
+        setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = setting.edit();
+
+        // if autoLogin Checked, save values
+        editor.putString("repeatTimeText", repeatDialog.getText().toString());//버튼 텍스트값 저장
+        editor.putBoolean("repeatTimeBoolean", repeatSwitch.isChecked());//반복설정 스위치값저장
+        editor.putBoolean("isVibe", vibeSwitch.isChecked());//진동설정 스위치값 저장
+        editor.putBoolean("isRing", ringSwitch.isChecked());//진동설정 스위치값 저장
+        editor.putInt("repeatTimeIdx", selectedRepeatTime);//라디오 인덱스값
+        editor.putString("ringtoneUri",tmpUri.toString());//벨소리 uri
+        editor.commit();
 
 
 
@@ -475,7 +487,6 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
             }
 
             Log.i("알람이 세팅되었습니다", mCalendar.getTime().toString());
-
             setting = getActivity().getSharedPreferences("setting", Activity.MODE_PRIVATE);
             SharedPreferences.Editor editor = setting.edit();
 
@@ -491,6 +502,7 @@ public class First_AlarmFragment extends Fragment implements TimePicker.OnTimeCh
         }
 
     }
+
 
     //알람의 해제
     private void resetAlarm() {

@@ -1,16 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/nav"
     tools:context="com.example.lg.deepdreamer.activity.AlarmPopUpActivity">
 
-    <Button
+    <LinearLayout
+        android:id="@+id/alarm_ll_0"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="40sp"
+            android:textColor="#3c5b54"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="Alarm " />
+    </LinearLayout>
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="100dp"
+    android:layout_below="@+id/alarm_ll_0">
+    <ImageButton
         android:id="@+id/bt_StopService"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="알람 종료"
-        tools:layout_editor_absoluteX="246dp"
-        tools:layout_editor_absoluteY="30dp" />
+        android:layout_height="150dp"
+        android:src="@drawable/stop"
+        android:gravity="center"
+        android:scaleType="centerInside"
+        android:backgroundTint="#00FF0000"
+        />
+
+    <TextView
+        android:layout_marginTop="180dp"
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center"
+        android:text="버튼을 누르시면 알람이 종료됩니다."
+        android:textSize="20sp" />
+</LinearLayout>
+
 </RelativeLayout>

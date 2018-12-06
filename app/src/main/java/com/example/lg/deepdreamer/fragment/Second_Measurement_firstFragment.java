@@ -142,7 +142,7 @@ public class Second_Measurement_firstFragment extends Fragment {
             is.close();
             bufferedReader.close();
 
-            for(int i=0;i<256;i++){
+           for(int i=0;i<256;i++){
                 entries.add(new Entry(i, gyroData[i]));
                 //Log.e("gryoData",gyroData[i].toString());
             }

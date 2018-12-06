@@ -1,10 +1,14 @@
 package com.example.lg.deepdreamer.activity;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -34,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_main);
-
+        if(!NetworkConnection()){//네트워크 상태확인
+            NotConnected_showAlert();
+        }
 
         vp = (ViewPager)findViewById(R.id.vp);
         vp.setOffscreenPageLimit(3);//페이지가 4개니까 미리 3개페이지 준비
@@ -187,6 +193,27 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         pagerAdapter.notifyDataSetChanged();
-    }
 
+    }
+    private void NotConnected_showAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("네트워크 연결 오류");
+        builder.setMessage("사용 가능한 무선네트워크가 없습니다.\n" + "먼저 무선네트워크 연결상태를 확인해 주세요.")
+                .setCancelable(false)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish(); // exit
+                        //application 프로세스를 강제 종료
+                        android.os.Process.killProcess(android.os.Process.myPid() );
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+    private boolean NetworkConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
+    }
 }

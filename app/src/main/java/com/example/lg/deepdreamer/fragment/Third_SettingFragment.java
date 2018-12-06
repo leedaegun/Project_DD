@@ -78,9 +78,11 @@ public class Third_SettingFragment extends Fragment {
                         .setTitle("로그아웃").setMessage("로그아웃 하시겠습니까?")
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
+
                                 Intent i = new Intent(getActivity(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 startActivity(i);
+                                getActivity().finish();
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {

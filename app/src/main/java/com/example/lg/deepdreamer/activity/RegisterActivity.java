@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner spinner;
     private Calendar mCalendar;
     private CheckBox cb_male,cb_female;
-    private Button bt_cancel,bt_email_chk;
+    private Button bt_cancel;
     private InputMethodManager inputMethodManager;
     private Boolean isEmailChk=false;
     RegisterAuth registerAuth;
@@ -46,7 +46,6 @@ public class RegisterActivity extends AppCompatActivity {
         bt_cancel = (Button)findViewById(R.id.bt_cancel);//취소버튼
         et_Name = (EditText) findViewById(R.id.et_Name);//이름
         et_Email=(EditText)findViewById(R.id.et_Email);//이메일
-        bt_email_chk =(Button)findViewById(R.id.bt_email_chk);//이메일 중복확인
         et_Pw = (EditText) findViewById(R.id.et_Pw);//패스워드
         et_pw_chk = (EditText) findViewById(R.id.et_pw_chk);//패스워드 체크
         spinner = (Spinner)findViewById(R.id.spinner);//생년월일 스피너
